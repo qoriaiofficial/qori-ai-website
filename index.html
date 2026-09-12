@@ -138,6 +138,55 @@
         }
 
         /* ========================================================
+           MENU MOVIL
+           Los enlaces del header son "hidden lg:flex", asi que por
+           debajo de 1024px no habia forma de alcanzarlos. Este panel
+           replica los 7 enlaces y se abre con el boton hamburguesa.
+           z-index 49: justo por debajo del nav (50) y muy por debajo
+           de los modales (100). Sin bloqueo de scroll: no toca
+           body.overflow, asi no interfiere con openModal/closeModal.
+           ======================================================== */
+        #mobile-nav {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 16px;
+            width: 220px;
+            z-index: 49;
+            background: rgba(13, 13, 13, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.28);
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+        #mobile-nav.open { display: flex; flex-direction: column; }
+        #mobile-nav a {
+            display: block;
+            padding: 13px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #B8B8B8;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: color .25s ease, background .25s ease;
+        }
+        #mobile-nav a:hover,
+        #mobile-nav a:focus-visible {
+            color: #FFFFFF;
+            background: rgba(212, 175, 55, 0.10);
+        }
+        #nav-toggle .nav-icon-close { display: none; }
+        #nav-toggle.open .nav-icon-open { display: none; }
+        #nav-toggle.open .nav-icon-close { display: block; }
+        /* Red de seguridad: si se cruza el breakpoint con el menu
+           abierto, el panel no puede quedarse visible en escritorio. */
+        @media (min-width: 1024px) {
+            #mobile-nav { display: none !important; }
+        }
+
+        /* ========================================================
            PROFUNDIDAD ATMOSFERICA (A)
            Grano de pelicula a nivel de pagina. Reutiliza exactamente
            el mismo SVG fractalNoise que ya usaba el hero, para que
@@ -801,8 +850,21 @@
         /* --- MOBILE FIXES (max-width: 760px) --- */
         @media (max-width: 760px) {
             #top { min-height: auto !important; padding-top: 80px; }
-            .inti-scope .landscape { display: none; }
-            .inti-scope .scene-shade { background: linear-gradient(180deg, #0D0D0D 0%, #050505 100%); }
+            /* La imagen del hero se muestra tambien en movil, solo como
+               fondo atmosferico: el hero mantiene su altura compacta.
+               Reencuadre hacia 62% 38% porque el recorte por defecto
+               (center 46%) pierde el pico de la montana en vertical.
+               El velo DEBE llevar alpha: antes era opaco (rgb solido) y,
+               al estar en z-index -2 sobre .landscapes (-3), tapaba la
+               imagen por completo. */
+            .inti-scope .landscape { background-position: 62% 38%; }
+            .inti-scope .scene-shade {
+                background: linear-gradient(180deg,
+                            rgba(5, 5, 5, 0.42) 0%,
+                            rgba(5, 5, 5, 0.62) 38%,
+                            rgba(5, 5, 5, 0.88) 72%,
+                            #050505 100%);
+            }
             .inti-scope .main { padding: 25px 6% 29px; min-height: 0; }
             .inti-scope .hero { min-height: 0; padding: 20px 0 40px; align-items: flex-start; }
             .inti-scope h1 { font-size: clamp(43px, 8vw, 62px); line-height: 1.16; letter-spacing: -2px; margin-bottom: 20px; }
@@ -848,8 +910,26 @@
             <a href="#membresia" class="relative z-20 text-xs md:text-sm font-medium bg-gold-highlight text-black px-4 md:px-6 py-2 md:py-2.5 rounded-full hover:bg-white transition">
                 Explorar Gratis
             </a>
+            <button id="nav-toggle" type="button" onclick="toggleMobileNav()"
+                    class="lg:hidden relative z-20 flex items-center justify-center w-10 h-10 text-white"
+                    aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">
+                <svg class="nav-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                <svg class="nav-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
         </div>
     </nav>
+
+    <!-- MENU MOVIL: hermano de <nav>, no anidado, para no alterar la
+         fila flex del header. Position fixed, fuera del flujo. -->
+    <div id="mobile-nav" aria-label="Navegación móvil">
+        <a href="#why" onclick="closeMobileNav()">El Reto</a>
+        <a href="#qoribot" onclick="closeMobileNav()">QoriBot</a>
+        <a href="#method" onclick="closeMobileNav()">Método</a>
+        <a href="#recursos" onclick="closeMobileNav()">Recursos</a>
+        <a href="#cursos" onclick="closeMobileNav()">Cursos</a>
+        <a href="#comunidad" onclick="closeMobileNav()">Comunidad</a>
+        <a href="javascript:void(0)" onclick="closeMobileNav(); openModal('modal-manifiesto');">Manifiesto</a>
+    </div>
 
     <!-- SECTION 1: CINEMATIC HERO (INTI Worlds Layout) -->
     <section id="top" class="inti-scope relative min-h-screen flex flex-col overflow-hidden pt-20">
@@ -2317,6 +2397,7 @@
         // Cerrar modal con la tecla Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                closeMobileNav();
                 document.querySelectorAll('.modal-backdrop').forEach(modal => {
                     if (modal.style.display === 'flex') {
                         closeModal(modal.id);
@@ -2558,6 +2639,48 @@
             o.addEventListener('keydown', ev => {
                 if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); choose(); }
             });
+        });
+
+        /* ========================================================
+           MENU MOVIL
+           Sin bloqueo de scroll (es un desplegable compacto, no un
+           drawer), por lo que no toca body.overflow y no puede
+           interferir con openModal/closeModal.
+           Cierra por: clic en enlace, clic fuera, Escape (integrado en
+           el manejador que ya existia) y al cruzar los 1024px.
+           ======================================================== */
+        function toggleMobileNav() {
+            const panel = document.getElementById('mobile-nav');
+            const btn = document.getElementById('nav-toggle');
+            const open = !panel.classList.contains('open');
+            panel.classList.toggle('open', open);
+            btn.classList.toggle('open', open);
+            btn.setAttribute('aria-expanded', String(open));
+            btn.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+        }
+
+        function closeMobileNav() {
+            const panel = document.getElementById('mobile-nav');
+            const btn = document.getElementById('nav-toggle');
+            if (!panel || !panel.classList.contains('open')) return;
+            panel.classList.remove('open');
+            btn.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.setAttribute('aria-label', 'Abrir menú');
+        }
+
+        // Clic fuera del panel y del boton
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('mobile-nav');
+            if (!panel || !panel.classList.contains('open')) return;
+            if (!panel.contains(e.target) && !e.target.closest('#nav-toggle')) {
+                closeMobileNav();
+            }
+        });
+
+        // Al pasar a escritorio, el panel deja de tener sentido
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) closeMobileNav();
         });
     </script>
 </body>
