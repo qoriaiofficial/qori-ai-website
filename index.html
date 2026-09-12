@@ -41,14 +41,120 @@
         .inca-pattern {
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37.5 15H22.5L30 0ZM0 15L15 22.5V7.5L0 15ZM60 15L45 22.5V7.5L60 15ZM30 60L22.5 45H37.5L30 60Z' fill='none' stroke='%23ffffff' stroke-opacity='0.02' stroke-width='1'/%3E%3C/svg%3E");
         }
+        /* (C) Profundidad en los paneles: degradado vertical sutil,
+           sombra proyectada hacia abajo (offset Y real, como en astra)
+           y una linea de luz en el borde superior. */
         .glass-panel {
             background-color: #0D0D0D;
+            background-image: linear-gradient(180deg, #101010 0%, #0B0B0B 100%);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 18px 50px -18px rgba(0, 0, 0, 0.75),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
-        .glow-gold { box-shadow: 0 0 40px rgba(244, 211, 94, 0.2); }
-        .glow-blue { box-shadow: 0 0 40px rgba(51, 207, 255, 0.2); }
+        /* (D) Los glows se proyectan hacia abajo en lugar de rodear el
+           elemento: mantienen el halo de color y ganan elevacion. */
+        .glow-gold { box-shadow: 0 22px 60px -20px rgba(244, 211, 94, 0.35), 0 0 40px rgba(244, 211, 94, 0.2); }
+        .glow-blue { box-shadow: 0 22px 60px -20px rgba(51, 207, 255, 0.35), 0 0 40px rgba(51, 207, 255, 0.2); }
+        /* box-shadow no se acumula entre reglas: sin esto, .glow-* pisaria
+           por completo la profundidad de .glass-panel. Estas variantes
+           combinan ambas sombras para los paneles que llevan glow. */
+        .glass-panel.glow-gold {
+            box-shadow: 0 18px 50px -18px rgba(0, 0, 0, 0.75),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+                        0 22px 60px -20px rgba(244, 211, 94, 0.35),
+                        0 0 40px rgba(244, 211, 94, 0.2);
+        }
+        .glass-panel.glow-blue {
+            box-shadow: 0 18px 50px -18px rgba(0, 0, 0, 0.75),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+                        0 22px 60px -20px rgba(51, 207, 255, 0.35),
+                        0 0 40px rgba(51, 207, 255, 0.2);
+        }
+        /* Fichas interiores de los modulos Costa/Sierra/Selva (15).
+           Van anidadas dentro de un .glass-panel, asi que reciben una
+           profundidad mas contenida: hundido en lugar de elevado.
+           El .p-4 las distingue de los iconos cuadrados del Laboratorio,
+           que tambien son .bg-bg-primary dentro de un panel. */
+        .glass-panel .bg-bg-primary.p-4 {
+            background-image: linear-gradient(180deg, #0A0A0A 0%, #050505 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+                        0 6px 16px -10px rgba(0, 0, 0, 0.8);
+        }
+        /* Tailwind no genera variantes hover para clases propias, por lo
+           que hover:glow-blue nunca llego a aplicarse. Esta regla lo
+           implementa de verdad, solo en las tarjetas que ya lo pedian. */
+        .glass-panel.hover\:glow-blue:hover {
+            border-color: rgba(51, 207, 255, 0.25);
+            box-shadow: 0 18px 50px -18px rgba(0, 0, 0, 0.75),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+                        0 22px 60px -20px rgba(51, 207, 255, 0.35),
+                        0 0 40px rgba(51, 207, 255, 0.2);
+        }
+
+        /* ========================================================
+           COSTURAS ENTRE SECCIONES (E)
+           Dos cortes duros: la linea de 1px de lado a lado y el salto
+           brusco entre #050505 y #0D0D0D.
+           - La linea pasa a ser un degradado que se desvanece en los
+             extremos en lugar de cruzar toda la pagina.
+           - Las secciones #0D0D0D se funden con el negro base arriba y
+             abajo mediante su propio background-image, asi el cambio de
+             tono es gradual y queda garantizado detras del contenido.
+           El pseudo-elemento va en z-index -1 dentro de un contexto de
+           apilamiento propio: pinta sobre el fondo de la seccion pero
+           por debajo de su contenido.
+           ======================================================== */
+        section[class*="border-t"] {
+            position: relative;
+            isolation: isolate;
+            border-top-color: transparent;
+        }
+        section[class*="border-t"]::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(90deg,
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 0.07) 22%,
+                        rgba(255, 255, 255, 0.07) 78%,
+                        rgba(255, 255, 255, 0) 100%);
+        }
+        /* Fundido de las secciones mas claras hacia el negro base.
+           Se hace con background-image sobre el background-color que ya
+           aporta la clase bg-bg-secondary. */
+        section.bg-bg-secondary {
+            background-image: linear-gradient(180deg,
+                        #050505 0px,
+                        #0D0D0D 150px,
+                        #0D0D0D calc(100% - 150px),
+                        #050505 100%);
+        }
+
+        /* ========================================================
+           PROFUNDIDAD ATMOSFERICA (A)
+           Grano de pelicula a nivel de pagina. Reutiliza exactamente
+           el mismo SVG fractalNoise que ya usaba el hero, para que
+           toda la pagina comparta la misma textura.
+           z-index 40: por debajo del nav (50) y de los modales (100),
+           por encima de todo el contenido (0-20).
+           Opacidad .028 (el hero conserva su .032 propio encima).
+           ======================================================== */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            pointer-events: none;
+            opacity: .028;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.8' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+        }
         
         .reveal {
             opacity: 0;
@@ -81,10 +187,10 @@
            SISTEMA DE DISEÑO VISUAL "INTI WORLDS" APLICADO AL HERO
            ======================================================== */
         .inti-scope { 
-            --inti-gold: #e5bf7c; 
+            --inti-gold: #F4D35E; 
             font-family: 'DM Sans', sans-serif; 
-            color: #f8f4e9; 
-            background: #0f1714; 
+            color: #FFFFFF; 
+            background: #050505; 
             position: relative; 
             isolation: isolate; 
             display: flex; 
@@ -94,34 +200,34 @@
         .inti-scope *, .inti-scope *::before, .inti-scope *::after { box-sizing: border-box; }
         .inti-scope button, .inti-scope a { -webkit-tap-highlight-color: transparent; font: inherit; cursor: pointer; color: inherit; outline-offset: 6px; border: 0; background: none; text-decoration: none; }
         .inti-scope button:focus-visible, .inti-scope a:focus-visible { outline: 2px solid var(--inti-gold); }
-        .inti-scope ::selection { background: #c6a368; color: #181c16; }
+        .inti-scope ::selection { background: #D4AF37; color: #050505; }
         
         .inti-scope .landscapes, .inti-scope .scene-shade, .inti-scope .grain { position: absolute; inset: 0; pointer-events: none; }
         .inti-scope .landscapes { z-index: -3; overflow: hidden; }
         .inti-scope .landscape { position: absolute; inset: 0; background-position: center 46%; background-size: cover; opacity: 0; transition: opacity 1s ease, transform 1.4s ease-out; }
         .inti-scope .landscape.active { opacity: 1; }
-        .inti-scope .scene-shade { z-index: -2; background: linear-gradient(90deg, rgba(10,17,14,.77) 0%, rgba(12,19,15,.49) 33%, rgba(11,18,14,.05) 68%, rgba(12,17,13,.08)), linear-gradient(0deg, #0f1714 0%, rgba(13,20,16,.91) 8%, rgba(13,20,16,.55) 23%, transparent 54%, rgba(11,18,17,.19) 82%, rgba(11,18,17,.62) 100%); }
+        .inti-scope .scene-shade { z-index: -2; background: linear-gradient(90deg, rgba(5,5,5,.77) 0%, rgba(5,5,5,.49) 33%, rgba(5,5,5,.05) 68%, rgba(5,5,5,.08)), linear-gradient(0deg, #050505 0%, rgba(5,5,5,.91) 8%, rgba(5,5,5,.55) 23%, transparent 54%, rgba(5,5,5,.19) 82%, rgba(5,5,5,.62) 100%); }
         .inti-scope .grain { z-index: 6; opacity: .032; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.8' d='M0 0h180v180H0z'/%3E%3C/svg%3E"); }
         
         .inti-scope .main { padding: 30px 4.5%; flex: 1; display: flex; flex-direction: column; min-height: 660px; position: relative; z-index: 1; }
         .inti-scope .scene-meta { display: flex; align-items: center; justify-content: space-between; }
         .inti-scope .eyebrow { font-size: 9px; letter-spacing: 2.1px; line-height: 1.5; font-weight: 500; display: flex; align-items: center, gap: 10px; }
-        .inti-scope .live-dot { display: inline-block; width: 5px; height: 5px; background: #d0b67b; border-radius: 50%; box-shadow: 0 0 9px #e5bf7c30; flex-shrink: 0; }
-        .inti-scope .coordinates { display: flex; gap: 10px; align-items: center; font-size: 9px; letter-spacing: 1.2px; color: #f6efdcaf; }
+        .inti-scope .live-dot { display: inline-block; width: 5px; height: 5px; background: #D4AF37; border-radius: 50%; box-shadow: 0 0 9px #F4D35E30; flex-shrink: 0; }
+        .inti-scope .coordinates { display: flex; gap: 10px; align-items: center; font-size: 9px; letter-spacing: 1.2px; color: #B8B8B8af; }
         
         .inti-scope .hero { display: flex; flex: 1; min-height: 407px; position: relative; align-items: center; padding: 30px 0 42px; }
         .inti-scope .hero-copy { position: relative; padding-bottom: 5px; }
         .inti-scope h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 400; font-size: clamp(58px, 5.55vw, 90px); line-height: 1.115; letter-spacing: -3px; margin: 0 0 24px; text-shadow: 0 2px 30px #12201520; }
         .inti-scope h1 em { color: var(--inti-gold); font-weight: 400; font-style: italic; }
-        .inti-scope .hero-copy > p { font-size: 13px; line-height: 1.9; color: #dfdfd1cf; letter-spacing: .1px; margin: 0 0 29px; max-width: 400px; }
+        .inti-scope .hero-copy > p { font-size: 13px; line-height: 1.9; color: #B8B8B8cf; letter-spacing: .1px; margin: 0 0 29px; max-width: 400px; }
         .inti-scope .primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 13px; background: #e8c58a; color: #24291f; font-size: 12px; font-weight: 650; padding: 17px 23px; border-radius: 3px; box-shadow: 0 3px 20px #00000014; transition: background .2s, transform .2s; }
         .inti-scope .primary-button:hover { background: #f5d69e; transform: translateY(-2px); }
-        .inti-scope .hero-footnote { font-size: 8px; letter-spacing: 1.8px; color: #d2d4c19c; display: flex; align-items: center; gap: 9px; margin-top: 23px; }
-        .inti-scope .tiny-diamond { width: 4px; height: 4px; background: #bca374; transform: rotate(45deg); }
+        .inti-scope .hero-footnote { font-size: 8px; letter-spacing: 1.8px; color: #B8B8B89c; display: flex; align-items: center; gap: 9px; margin-top: 23px; }
+        .inti-scope .tiny-diamond { width: 4px; height: 4px; background: #D4AF37; transform: rotate(45deg); }
         
         .inti-scope .region-caption { position: absolute; bottom: 39px; right: 2px; width: 30%; text-shadow: 0 2px 8px #0008; }
         .inti-scope .caption-rule { display: block; width: 29px; height: 1px; background: var(--inti-gold); margin-bottom: 13px; }
-        .inti-scope .region-caption > span:not(.caption-rule) { font-size: 8px; letter-spacing: 2.5px; color: #ede5cd; }
+        .inti-scope .region-caption > span:not(.caption-rule) { font-size: 8px; letter-spacing: 2.5px; color: #D4AF37; }
         .inti-scope .region-caption h2 { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 22px; margin: 8px 0 12px; }
         .inti-scope .caption-dots { display: flex; gap: 6px; }
         .inti-scope .caption-dots button { width: 17px; height: 12px; padding: 5px 0; position: relative; }
@@ -214,7 +320,7 @@
             position: fixed;
             z-index: 100;
             inset: 0;
-            background: #060e0be6;
+            background: #050505e6;
             backdrop-filter: blur(14px);
             display: none;
             align-items: center;
@@ -225,8 +331,8 @@
         }
         .modal {
             position: relative;
-            background: #17211c;
-            border: 1px solid #d8bb802e;
+            background: #0D0D0D;
+            border: 1px solid #D4AF372e;
             border-radius: 9px;
             width: min(800px, 100%);
             padding: 48px;
@@ -239,7 +345,7 @@
             right: 18px;
             top: 18px;
             z-index: 20;
-            border: 1px solid #ede3c43a;
+            border: 1px solid #D4AF373a;
             background: #15201988;
             width: 36px;
             height: 36px;
@@ -248,22 +354,35 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #e8e5d9;
+            color: #FFFFFF;
             transition: color 0.2s;
         }
-        .modal-close:hover { color: #e5bf7c; }
+        .modal-close:hover { color: #F4D35E; }
+        /* Etiqueta superior de los modales legales y del manifiesto.
+           Antes no coincidia con ninguna regla, por lo que se veia sin estilo.
+           Se limita a .eyebrow.gold para no afectar a los eyebrow de
+           #modal-checkout ni #modal-priority, que llevan su propio estilo. */
+        .modal .eyebrow.gold {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #D4AF37;
+            margin-bottom: 4px;
+        }
         .modal h2 {
             font-family: 'Playfair Display', serif;
             font-size: 43px;
             line-height: 1.2;
             font-weight: 400;
             margin: 17px 0;
-            color: #f8f4e9;
+            color: #FFFFFF;
         }
-        .modal h2 em { color: #e5bf7c; font-weight: 400; font-style: italic; }
+        .modal h2 em { color: #F4D35E; font-weight: 400; font-style: italic; }
         .modal-intro {
             font-size: 12px;
-            color: #bec5b8;
+            color: #B8B8B8;
             line-height: 1.8;
             margin: 0 0 28px;
         }
@@ -272,12 +391,12 @@
             font-size: 20px;
             font-weight: 500;
             margin: 24px 0 8px;
-            color: #e8e5d9;
+            color: #FFFFFF;
         }
         .modal-content p, .modal-content li {
             font-size: 13px;
             line-height: 1.8;
-            color: #b4bfac;
+            color: #B8B8B8;
             margin-bottom: 8px;
         }
         .modal-content ul {
@@ -302,21 +421,21 @@
             font-weight: 400;
             font-size: 28px;
             line-height: 1.35;
-            color: #f8f4e9;
+            color: #FFFFFF;
             margin: 30px 0 10px;
         }
-        .m-statement em { color: #e5bf7c; font-style: italic; }
+        .m-statement em { color: #F4D35E; font-style: italic; }
         .m-support {
             font-size: 13px;
             line-height: 1.8;
-            color: #b4bfac;
+            color: #B8B8B8;
             margin: 0;
             max-width: 560px;
         }
-        .m-closing { text-align: center; margin-top: 50px; padding-top: 30px; border-top: 1px solid #d8bb802e; }
+        .m-closing { text-align: center; margin-top: 50px; padding-top: 30px; border-top: 1px solid #D4AF372e; }
         .m-closing .m-statement { font-size: 24px; margin: 0 auto 24px; max-width: 480px; }
-        .m-signature { font-family: 'Playfair Display', serif; font-style: italic; font-size: 20px; color: #e5bf7c; margin: 0 0 8px; }
-        .m-tagline { font-size: 11px; letter-spacing: 1.5px; color: #8a8a8a; }
+        .m-signature { font-family: 'Playfair Display', serif; font-style: italic; font-size: 20px; color: #F4D35E; margin: 0 0 8px; }
+        .m-tagline { font-size: 11px; letter-spacing: 1.5px; color: #B8B8B8; }
 
         /* ========================================================
            CHECKOUT MODAL
@@ -743,30 +862,30 @@
         <div class="main flex-1 flex flex-col min-h-[660px] relative z-10 px-[4.5%] py-8">
             <div class="scene-meta flex items-center justify-between">
                 <span class="eyebrow flex items-center gap-2.5 text-[9px] tracking-[2.1px] font-medium">
-                    <span class="live-dot w-1.5 h-1.5 bg-[#d0b67b] rounded-full"></span> EL ECOSISTEMA DE IA DEL PERÚ
+                    <span class="live-dot w-1.5 h-1.5 bg-[#D4AF37] rounded-full"></span> EL ECOSISTEMA DE IA DEL PERÚ
                 </span>
-                <span class="coordinates flex gap-2.5 items-center text-[9px] tracking-[1.2px] text-[#f6efdcaf]">12.04° S / 77.03° W</span>
+                <span class="coordinates flex gap-2.5 items-center text-[9px] tracking-[1.2px] text-[#B8B8B8af]">12.04° S / 77.03° W</span>
             </div>
             
             <section class="hero flex flex-1 min-h-[407px] relative items-center py-8 pb-10">
                 <div class="hero-copy relative pb-1.5">
-                    <h1 class="font-['Playfair_Display'] font-normal leading-[1.115] tracking-[-3px] mb-6 text-[clamp(58px,5.55vw,90px)]">El Oro del<br/><em class="text-[#e5bf7c] font-normal italic">Conocimiento.</em></h1>
-                    <p class="text-[13px] leading-[1.9] text-[#dfdfd1cf] tracking-[0.1px] mb-7 max-w-[400px]">La Inteligencia Artificial está cambiando el mundo. QORI AI reúne las herramientas, el conocimiento y la comunidad para que cualquier peruano pueda aprender a utilizarlas con confianza. No es solo un curso. Es el ecosistema de IA del Perú.</p>
+                    <h1 class="font-['Playfair_Display'] font-normal leading-[1.115] tracking-[-3px] mb-6 text-[clamp(58px,5.55vw,90px)]">El Oro del<br/><em class="text-[#F4D35E] font-normal italic">Conocimiento.</em></h1>
+                    <p class="text-[13px] leading-[1.9] text-[#B8B8B8cf] tracking-[0.1px] mb-7 max-w-[400px]">La Inteligencia Artificial está cambiando el mundo. QORI AI reúne las herramientas, el conocimiento y la comunidad para que cualquier peruano pueda aprender a utilizarlas con confianza. No es solo un curso. Es el ecosistema de IA del Perú.</p>
                     <a href="#membresia" class="btn-secondary inline-flex items-center justify-center gap-3 text-[12px] font-[650] py-[17px] px-[23px] rounded-[3px]">
                         Activa mi Potencial
                     </a>
-                    <div class="hero-footnote flex items-center gap-2.5 mt-6 text-[8px] tracking-[1.8px] text-[#d2d4c19c]">
-                        <span class="tiny-diamond w-1 h-1 bg-[#bca374] rotate-45"></span> TRES REGIONES. UN SOLO PAÍS.
+                    <div class="hero-footnote flex items-center gap-2.5 mt-6 text-[8px] tracking-[1.8px] text-[#B8B8B89c]">
+                        <span class="tiny-diamond w-1 h-1 bg-[#D4AF37] rotate-45"></span> TRES REGIONES. UN SOLO PAÍS.
                     </div>
                 </div>
                 <div class="region-caption absolute bottom-10 right-2 w-[30%]">
-                    <span class="caption-rule block w-7 h-px bg-[#e5bf7c] mb-3"></span>
-                    <span class="text-[8px] tracking-[2.5px] text-[#ede5cd]">EL FUTURO DEL PERÚ</span>
+                    <span class="caption-rule block w-7 h-px bg-[#F4D35E] mb-3"></span>
+                    <span class="text-[8px] tracking-[2.5px] text-[#D4AF37]">EL FUTURO DEL PERÚ</span>
                     <h2 class="font-['Playfair_Display'] font-normal text-[22px] my-2 mb-3">Se escribe hoy.</h2>
                     <div class="caption-dots flex gap-1.5">
                         <button class="w-4 h-3 relative"><span class="absolute left-0 right-0 h-0.5 bg-white/50 top-2"></span></button>
                         <button class="w-4 h-3 relative"><span class="absolute left-0 right-0 h-0.5 bg-white/50 top-2"></span></button>
-                        <button class="w-4 h-3 relative selected"><span class="absolute left-0 right-0 h-0.5 bg-[#e5bf7c] top-2"></span></button>
+                        <button class="w-4 h-3 relative selected"><span class="absolute left-0 right-0 h-0.5 bg-[#F4D35E] top-2"></span></button>
                     </div>
                 </div>
             </section>
@@ -780,7 +899,7 @@
         <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 md:gap-12 items-center relative z-10 w-full">
             <div class="lg:col-span-5 reveal">
                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-4 block">Tu Guía Oficial</span>
-                <h2 class="text-4xl md:text-7xl font-black tracking-tighter mb-2 md:mb-4 text-white">Hola, soy <br>QoriBot.</h2>
+                <h2 class="text-4xl md:text-7xl font-['Playfair_Display'] font-normal tracking-tight mb-2 md:mb-4 text-white">Hola, soy <br>QoriBot.</h2>
                 <p class="text-lg md:text-xl text-gold-highlight font-medium mb-4 md:mb-6">Tu guía en el mundo de la Inteligencia Artificial.</p>
                 
                 <div class="space-y-4 md:space-y-6 mb-6 md:mb-8">
@@ -841,7 +960,7 @@
     <section id="why" class="py-20 md:py-32 px-4 md:px-8 border-t border-white/5">
         <div class="max-w-7xl mx-auto">
             <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center mb-12 reveal">
-                <h2 class="text-3xl md:text-6xl font-black tracking-tight leading-tight text-white">
+                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight leading-tight text-white">
                     El Perú está cambiando. <br><span class="text-ai-blue">¿Estás listo?</span>
                 </h2>
                 <div>
@@ -882,7 +1001,7 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10 md:mb-20 reveal">
                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-4 block">Nuestro Ecosistema</span>
-                <h2 class="text-3xl md:text-7xl font-black tracking-tighter mb-2 md:mb-4 text-white">Elige tu mundo</h2>
+                <h2 class="text-3xl md:text-7xl font-['Playfair_Display'] font-normal tracking-tight mb-2 md:mb-4 text-white">Elige tu mundo</h2>
                 <p class="text-text-secondary max-w-2xl mx-auto text-sm md:text-lg">
                     La diversidad del Perú conectada a través de la Inteligencia Artificial.
                 </p>
@@ -937,7 +1056,7 @@
                         <div class="flex flex-col md:flex-row gap-6 md:gap-12">
                             <div class="md:w-2/5">
                                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-3 block">Región 01 · COSTA DEL PACÍFICO</span>
-                                <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white mb-2 md:mb-4">COSTA</h2>
+                                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white mb-2 md:mb-4">COSTA</h2>
                                 <p class="text-base md:text-xl text-gold-highlight font-medium mb-6 md:mb-8 leading-tight">Donde la creatividad, la tecnología y los negocios se encuentran.</p>
                                 <a href="#herramientas" class="btn-secondary inline-block text-xs md:text-base px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold">
                                     Explorar Costa
@@ -994,7 +1113,7 @@
                         <div class="flex flex-col md:flex-row gap-6 md:gap-12">
                             <div class="md:w-2/5">
                                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-3 block">Región 02 · SIERRA ANDINA</span>
-                                <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white mb-2 md:mb-4">SIERRA</h2>
+                                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white mb-2 md:mb-4">SIERRA</h2>
                                 <p class="text-base md:text-xl text-gold-highlight font-medium mb-6 md:mb-8 leading-tight">Donde el conocimiento, la educación y la innovación abren nuevos caminos.</p>
                                 <a href="#method" class="btn-secondary inline-block text-xs md:text-base px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold">
                                     Explorar Sierra
@@ -1051,7 +1170,7 @@
                         <div class="flex flex-col md:flex-row gap-6 md:gap-12">
                             <div class="md:w-2/5">
                                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-3 block">Región 03 · SELVA AMAZÓNICA</span>
-                                <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white mb-2 md:mb-4">SELVA</h2>
+                                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white mb-2 md:mb-4">SELVA</h2>
                                 <p class="text-base md:text-xl text-gold-highlight font-medium mb-6 md:mb-8 leading-tight">Donde la innovación, la tecnología y el impacto construyen el futuro.</p>
                                 <a href="#recursos" class="btn-secondary inline-block text-xs md:text-base px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold">
                                     Explorar Selva
@@ -1108,7 +1227,7 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10 md:mb-20 reveal">
                 <span class="text-xs md:text-sm uppercase tracking-widest text-ai-blue mb-2 md:mb-4 block">Laboratorio de IA</span>
-                <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white">Domina las herramientas del mañana</h2>
+                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white">Domina las herramientas del mañana</h2>
             </div>
             
             <!-- Grid actualizado para 5 tarjetas -->
@@ -1154,7 +1273,7 @@
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-10 md:mb-16 reveal">
                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-4 block">Directorio Curado</span>
-                <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white mb-4">Panorama Completo de la IA</h2>
+                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white mb-4">Panorama Completo de la IA</h2>
                 <p class="text-text-secondary max-w-2xl mx-auto text-sm md:text-lg">
                     Explora el panorama completo de la IA — actualizado, sin filtro de un solo país, para que elijas la herramienta correcta para lo que necesitas.
                 </p>
@@ -1351,7 +1470,7 @@
             <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center mb-10 md:mb-20">
                 <div class="reveal">
                     <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-4 block">Framework Propietario</span>
-                    <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white">El Método QORI</h2>
+                    <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white">El Método QORI</h2>
                 </div>
                 <p class="text-sm md:text-lg text-text-secondary font-light reveal">
                     La Inteligencia Artificial no se domina memorizando prompts. Se domina desarrollando una forma de pensar. <br><br>
@@ -1404,7 +1523,7 @@
     <section id="recursos" class="py-20 md:py-32 px-4 md:px-8 border-t border-white/5 bg-bg-primary">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-16">
             <div class="reveal">
-                <h2 class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-white">Recursos Gratuitos</h2>
+                <h2 class="text-3xl md:text-4xl font-['Playfair_Display'] font-normal mb-4 md:mb-6 text-white">Recursos Gratuitos</h2>
                 <div class="glass-panel rounded-2xl md:rounded-3xl p-6 md:p-8">
                     <ul class="space-y-4 md:space-y-6">
                         <li class="flex justify-between items-center border-b border-white/5 pb-4">
@@ -1439,7 +1558,7 @@
                 </div>
             </div>
             <div id="cursos" class="reveal">
-                <h2 class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-white">Cursos Premium</h2>
+                <h2 class="text-3xl md:text-4xl font-['Playfair_Display'] font-normal mb-4 md:mb-6 text-white">Cursos Premium</h2>
                 <div class="glass-panel rounded-2xl md:rounded-3xl p-6 md:p-8 h-full flex flex-col justify-center border-ai-blue/10">
                     <h3 class="text-xl md:text-2xl font-bold mb-2 text-white">IA para Principiantes</h3>
                     <p class="text-text-secondary text-sm md:text-base mb-4 md:mb-6">De cero a tu primera automatización en 4 semanas.</p>
@@ -1456,7 +1575,7 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10 md:mb-20 reveal">
                 <span class="text-xs md:text-sm uppercase tracking-widest text-gold-primary mb-2 md:mb-4 block">Planes y Membresía</span>
-                <h2 class="text-3xl md:text-6xl font-black tracking-tighter text-white">Únete a QORI AI</h2>
+                <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal tracking-tight text-white">Únete a QORI AI</h2>
                 <p class="text-text-secondary max-w-2xl mx-auto text-sm md:text-lg mt-4 md:mt-6 font-light">
                     Diseñado para cada etapa de tu camino. Comienza gratis y escala hacia un dominio total de la Inteligencia Artificial.
                 </p>
@@ -1505,7 +1624,7 @@
     <!-- SECTION 10: COMMUNITY -->
     <section id="comunidad" class="py-20 md:py-32 px-4 md:px-8 border-t border-white/5 bg-bg-primary">
         <div class="max-w-5xl mx-auto text-center reveal">
-            <h2 class="text-3xl md:text-6xl font-black mb-6 md:mb-8 tracking-tighter text-white">Únete a la Red</h2>
+            <h2 class="text-3xl md:text-6xl font-['Playfair_Display'] font-normal mb-6 md:mb-8 tracking-tight text-white">Únete a la Red</h2>
             <p class="text-text-secondary text-sm md:text-lg mb-8 md:mb-12 max-w-2xl mx-auto">Miles de peruanos ya están construyendo el futuro. Conecta, aprende y crece con la comunidad QORI más activa del país.</p>
             <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-12">
                 <a href="https://wa.me/51900951112" target="_blank" class="glass-panel px-4 md:px-8 py-3 md:py-4 rounded-full hover:bg-white/5 transition flex items-center gap-2 md:gap-3 text-white text-xs md:text-sm">
@@ -1540,7 +1659,7 @@
         <div class="relative z-10 max-w-5xl mx-auto px-4 md:px-6 reveal flex flex-col items-center w-full">
             <img src="https://z-cdn-media.chatglm.cn/files/ad0a3b2b-260e-4227-a556-dce29e63d016.png?auth_key=1889059567-d000ebfcdfb547eb99c34c2c911831e9-0-5fe86e0d23b73c036e0e4161d6975248" alt="QORI AI Logo" class="h-16 md:h-24 lg:h-28 mb-6 md:mb-10 logo-blend">
             <img src="https://z-cdn-media.chatglm.cn/files/d00ef780-9fac-40c6-a752-9d248a052adc.png?auth_key=1889047113-1b8291ca7dba40d3a93602018fde0d71-0-3e6a5ce60c29ebca5aa54ff8beca9a82" alt="El Futuro del Perú con QoriBot" class="w-full max-w-3xl mx-auto mb-8 md:mb-12 rounded-xl md:rounded-2xl drop-shadow-[0_25px_50px_rgba(244,211,94,0.15)]">
-            <h2 class="text-3xl md:text-7xl font-black tracking-tighter mb-4 md:mb-6 leading-none text-white">
+            <h2 class="text-3xl md:text-7xl font-['Playfair_Display'] font-normal tracking-tight mb-4 md:mb-6 leading-none text-white">
                 El futuro del Perú <br>se escribe hoy.
             </h2>
             <p class="text-sm md:text-xl text-text-secondary font-light mb-8 md:mb-10 max-w-2xl mx-auto">
