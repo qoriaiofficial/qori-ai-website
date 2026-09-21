@@ -194,6 +194,205 @@
             #mobile-nav { display: none !important; }
         }
 
+
+        /* ========================================================
+           LIBRO DE RECLAMACIONES (Art. 150 Ley 29571)
+           El aviso tiene formato legalmente prescrito: fondo amarillo,
+           texto negro y la frase del Anexo III sin alterar. El icono de
+           libro es nuestro y meramente decorativo: el Reglamento no
+           prescribe ninguno, y el logotipo de INDECOPI esta reservado a
+           la propia entidad, por lo que no se usa.
+           ======================================================== */
+        .lr-aviso {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto 28px;
+            padding: 14px 18px;
+            background: #FFD100;
+            color: #000000;
+            border: 2px solid #000000;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            font-family: Arial, Helvetica, sans-serif;
+            transition: filter .25s ease, transform .25s ease;
+        }
+        .lr-aviso:hover { filter: brightness(1.06); transform: translateY(-2px); }
+        .lr-aviso:focus-visible { outline: 3px solid #FFFFFF; outline-offset: 3px; }
+        .lr-aviso svg { flex-shrink: 0; color: #000000; }
+        .lr-aviso-txt { display: flex; flex-direction: column; gap: 3px; }
+        .lr-aviso-titulo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+        .lr-aviso-legal { font-size: 9.5px; line-height: 1.45; font-weight: 600; }
+
+        /* --- modal --- */
+        #modal-libro-reclamaciones {
+            --lr-gold: #D4AF37;
+            --lr-line: rgba(255,255,255,.14);
+            --lr-muted: #B8B8B8;
+        }
+        #modal-libro-reclamaciones .modal { width: min(840px, 100%); }
+        #modal-libro-reclamaciones .lr-body { font-family: 'Inter', sans-serif; color: #FFFFFF; }
+        #modal-libro-reclamaciones .lr-body *, #modal-libro-reclamaciones .lr-body *::before { box-sizing: border-box; }
+        #modal-libro-reclamaciones .lr-prov {
+            background: rgba(212,175,55,.06);
+            border: 1px solid rgba(212,175,55,.28);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+            font-size: 12px;
+            color: var(--lr-muted);
+            line-height: 1.7;
+        }
+        #modal-libro-reclamaciones .lr-prov strong { color: #FFFFFF; font-weight: 600; }
+        #modal-libro-reclamaciones .lr-seccion {
+            font-size: .7rem; font-weight: 700; letter-spacing: .22em;
+            text-transform: uppercase; color: var(--lr-gold);
+            margin: 26px 0 12px; display: flex; align-items: center; gap: .6rem;
+        }
+        #modal-libro-reclamaciones .lr-seccion::before {
+            content: ''; width: 24px; height: 1.5px; background: var(--lr-gold);
+        }
+        #modal-libro-reclamaciones .lr-campo { margin-bottom: 14px; }
+        #modal-libro-reclamaciones .lr-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        #modal-libro-reclamaciones label.lr-label {
+            display: block; font-size: .78rem; font-weight: 600;
+            margin-bottom: .45rem; color: var(--lr-muted);
+        }
+        #modal-libro-reclamaciones .lr-opcional { color: rgba(255,255,255,.35); font-weight: 400; }
+        #modal-libro-reclamaciones .lr-input {
+            width: 100%; padding: .8rem 1rem;
+            background: rgba(255,255,255,.03);
+            border: 1px solid var(--lr-line); border-radius: 10px;
+            color: #FFFFFF; font-size: .92rem; font-family: inherit;
+            transition: border-color .3s, background .3s, box-shadow .3s;
+        }
+        #modal-libro-reclamaciones .lr-input:focus {
+            outline: none; border-color: var(--lr-gold);
+            background: rgba(255,255,255,.05);
+            box-shadow: 0 0 0 3px rgba(212,175,55,.1);
+        }
+        #modal-libro-reclamaciones .lr-input::placeholder { color: rgba(255,255,255,.3); }
+        #modal-libro-reclamaciones textarea.lr-input { resize: vertical; min-height: 110px; line-height: 1.6; }
+        #modal-libro-reclamaciones .lr-radios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #modal-libro-reclamaciones .lr-radio {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: .85rem 1rem; border: 1px solid var(--lr-line);
+            border-radius: 10px; cursor: pointer; font-size: .85rem;
+            background: rgba(255,255,255,.02); transition: all .3s;
+        }
+        #modal-libro-reclamaciones .lr-radio:hover { border-color: rgba(212,175,55,.45); }
+        #modal-libro-reclamaciones .lr-radio input { margin-top: 3px; accent-color: var(--lr-gold); flex-shrink: 0; }
+        #modal-libro-reclamaciones .lr-radio-nota { display: block; font-size: .72rem; color: var(--lr-muted); margin-top: 2px; }
+        #modal-libro-reclamaciones .lr-check {
+            display: flex; align-items: flex-start; gap: 11px;
+            font-size: .82rem; color: var(--lr-muted); line-height: 1.6;
+            margin: 6px 0 4px;
+        }
+        #modal-libro-reclamaciones .lr-check input { margin-top: 3px; accent-color: var(--lr-gold); flex-shrink: 0; }
+        #modal-libro-reclamaciones .lr-nota {
+            font-size: .75rem; color: rgba(255,255,255,.4);
+            line-height: 1.6; margin-top: 16px;
+        }
+        #modal-libro-reclamaciones .lr-error {
+            display: none; margin-top: 12px; padding: 11px 14px;
+            border: 1px solid rgba(255,120,100,.4); border-radius: 8px;
+            background: rgba(255,120,100,.07);
+            font-size: .8rem; color: #ffb4a2;
+        }
+        #modal-libro-reclamaciones .lr-error.show { display: block; }
+        #modal-libro-reclamaciones .lr-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: .95rem 1.5rem; font-size: .92rem; font-weight: 700;
+            font-family: inherit; border-radius: 100px; cursor: pointer;
+            border: 1px solid transparent; transition: all .35s;
+        }
+        #modal-libro-reclamaciones .lr-btn-oro {
+            width: 100%; margin-top: 18px;
+            background: linear-gradient(135deg, #F4D35E, #b8941f);
+            color: #1a1505;
+            box-shadow: 0 10px 28px -10px rgba(212,175,55,.6);
+        }
+        #modal-libro-reclamaciones .lr-btn-oro:hover { transform: translateY(-2px); }
+        #modal-libro-reclamaciones .lr-btn-linea {
+            background: transparent; color: #FFFFFF;
+            border-color: rgba(212,175,55,.35);
+        }
+        #modal-libro-reclamaciones .lr-btn-linea:hover { background: rgba(212,175,55,.12); }
+        #modal-libro-reclamaciones .lr-btn.cargando { color: transparent !important; pointer-events: none; position: relative; }
+        #modal-libro-reclamaciones .lr-btn.cargando::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 18px; height: 18px; margin: -9px 0 0 -9px;
+            border: 2px solid rgba(0,0,0,.25); border-top-color: #1a1505;
+            border-radius: 50%; animation: co-spin .7s linear infinite;
+        }
+
+        /* --- constancia --- */
+        #modal-libro-reclamaciones .lr-ok-icono {
+            width: 88px; height: 88px; border-radius: 50%;
+            background: linear-gradient(135deg, #F4D35E, #b8941f);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 22px; color: #1a1505;
+        }
+        #modal-libro-reclamaciones .lr-codigo {
+            font-size: 1.9rem; font-weight: 800; color: var(--lr-gold);
+            letter-spacing: .04em; margin: 4px 0 6px;
+        }
+        #modal-libro-reclamaciones .lr-acciones {
+            display: flex; gap: 12px; justify-content: center;
+            flex-wrap: wrap; margin-top: 26px;
+        }
+        #modal-libro-reclamaciones .lr-constancia {
+            text-align: left; border: 1px solid var(--lr-line);
+            border-radius: 12px; padding: 20px; margin-top: 24px;
+            font-size: .82rem; line-height: 1.75; color: var(--lr-muted);
+        }
+        #modal-libro-reclamaciones .lr-constancia dt {
+            color: rgba(255,255,255,.45); font-size: .7rem;
+            text-transform: uppercase; letter-spacing: .12em; margin-top: 12px;
+        }
+        #modal-libro-reclamaciones .lr-constancia dd { margin: 2px 0 0; color: #FFFFFF; }
+
+        @media (max-width: 760px) {
+            .lr-aviso { flex-direction: row; gap: 11px; padding: 12px 14px; }
+            .lr-aviso-titulo { font-size: 11.5px; }
+            .lr-aviso-legal { font-size: 8.5px; }
+            #modal-libro-reclamaciones .lr-fila,
+            #modal-libro-reclamaciones .lr-radios { grid-template-columns: 1fr; }
+        }
+
+        /* Impresion de la constancia: solo la hoja, sin el resto del sitio. */
+        @media print {
+            body > *:not(#modal-libro-reclamaciones) { display: none !important; }
+            #modal-libro-reclamaciones {
+                display: block !important; position: static !important;
+                background: #FFFFFF !important; backdrop-filter: none !important;
+                padding: 0 !important; overflow: visible !important;
+            }
+            #modal-libro-reclamaciones .modal {
+                background: #FFFFFF !important; color: #000000 !important;
+                border: 0 !important; box-shadow: none !important;
+                width: 100% !important; max-height: none !important;
+                padding: 0 !important; overflow: visible !important;
+            }
+            #modal-libro-reclamaciones .modal-close,
+            #modal-libro-reclamaciones .lr-acciones,
+            #modal-libro-reclamaciones #lr-form-estado { display: none !important; }
+            #modal-libro-reclamaciones .lr-body,
+            #modal-libro-reclamaciones .lr-constancia,
+            #modal-libro-reclamaciones .lr-constancia dd,
+            #modal-libro-reclamaciones .lr-ok h2 { color: #000000 !important; }
+            #modal-libro-reclamaciones .lr-codigo { color: #000000 !important; }
+            #modal-libro-reclamaciones .lr-constancia { border-color: #999 !important; }
+            #modal-libro-reclamaciones .lr-ok-icono { display: none !important; }
+        }
         /* ========================================================
            PROFUNDIDAD ATMOSFERICA (A)
            Grano de pelicula a nivel de pagina. Reutiliza exactamente
@@ -1767,6 +1966,20 @@
     <footer class="w-full bg-black border-t border-white/5 pb-12">
         <img src="https://z-cdn-media.chatglm.cn/files/0c9b475c-efa7-4c1c-b27b-8ca2f1b011bb.png?auth_key=1889046638-676397599c9a4ebd9d30d6c3929d4d95-0-7872c7caee5ce9d8865ce5ff85111310" alt="QORI AI Footer" class="w-full h-auto object-contain mb-8 md:mb-12">
         
+
+        <!-- AVISO OFICIAL DEL LIBRO DE RECLAMACIONES (Anexo III, DS 011-2011-PCM).
+             Fondo amarillo y texto negro son obligatorios, igual que la frase.
+             El icono es decorativo y propio: el Reglamento no prescribe ninguno
+             y el logotipo de INDECOPI esta reservado a la entidad. -->
+        <div class="max-w-7xl mx-auto px-4 md:px-8">
+            <button type="button" class="lr-aviso" onclick="openLibroReclamaciones()" aria-label="Abrir el Libro de Reclamaciones">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10.6 5.2 8.6 4.5 6 4.5c-.9 0-1.7.1-2.5.2v13c.8-.1 1.6-.2 2.5-.2 2.6 0 4.6.7 6 2 1.4-1.3 3.4-2 6-2 .9 0 1.7.1 2.5.2v-13c-.8-.1-1.6-.2-2.5-.2-2.6 0-4.6.7-6 2Z"/><path d="M12 6.5v12"/></svg>
+                <span class="lr-aviso-txt">
+                    <span class="lr-aviso-titulo">Libro de Reclamaciones</span>
+                    <span class="lr-aviso-legal">CONFORME A LO ESTABLECIDO EN EL CÓDIGO DE PROTECCIÓN Y DEFENSA DEL CONSUMIDOR, ESTE ESTABLECIMIENTO CUENTA CON UN LIBRO DE RECLAMACIONES A TU DISPOSICIÓN.</span>
+                </span>
+            </button>
+        </div>
         <!-- FOOTER LINKS -->
         <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 flex-wrap text-center">
             <a href="https://wa.me/51900951112" target="_blank" class="text-xs md:text-sm text-text-secondary hover:text-white transition">WhatsApp</a>
@@ -2371,6 +2584,149 @@
         </div>
     </div>
 
+
+    <!-- MODAL: LIBRO DE RECLAMACIONES VIRTUAL (Art. 150 Ley 29571) -->
+    <div id="modal-libro-reclamaciones" class="modal-backdrop" onclick="if(event.target === this) closeModal('modal-libro-reclamaciones')">
+        <div class="modal" role="dialog" aria-modal="true" aria-label="Libro de Reclamaciones">
+            <button class="modal-close" onclick="closeModal('modal-libro-reclamaciones')" aria-label="Cerrar">
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <div class="lr-body">
+
+                <!-- ===== FORMULARIO ===== -->
+                <div id="lr-form-estado">
+                    <span class="eyebrow gold">LIBRO DE RECLAMACIONES</span>
+                    <h2>Hoja de <em>Reclamación</em></h2>
+                    <p class="modal-intro">
+                        Conforme al Artículo 150 del Código de Protección y Defensa del Consumidor.
+                        Recibirás una respuesta en un plazo máximo de 15 días hábiles.
+                    </p>
+
+                    <div class="lr-prov">
+                        <strong>Proveedor:</strong> QORI AI &nbsp;·&nbsp;
+                        <strong>RUC:</strong> 10436928861 &nbsp;·&nbsp;
+                        <strong>Domicilio:</strong> <span style="white-space:pre-wrap;">CALLE EDUARDO MENDOZA MZ.B LT.5 URB. LAS LILAS -  SANTIAGO DE SURCO</span>
+                    </div>
+
+                    <form id="lr-form" onsubmit="lrEnviar(event)">
+
+                        <div class="lr-seccion">Tipo de solicitud</div>
+                        <div class="lr-radios">
+                            <label class="lr-radio">
+                                <input type="radio" name="tipo" value="reclamo" required>
+                                <span>Reclamo
+                                    <span class="lr-radio-nota">Disconformidad con el producto o servicio.</span>
+                                </span>
+                            </label>
+                            <label class="lr-radio">
+                                <input type="radio" name="tipo" value="queja">
+                                <span>Queja
+                                    <span class="lr-radio-nota">Disconformidad con la atención recibida.</span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="lr-seccion">Datos del consumidor</div>
+                        <div class="lr-campo">
+                            <label class="lr-label" for="lr-nombre">Nombre completo</label>
+                            <input class="lr-input" id="lr-nombre" name="nombre" type="text" maxlength="200" required>
+                        </div>
+                        <div class="lr-fila">
+                            <div class="lr-campo">
+                                <label class="lr-label" for="lr-documento">Documento de identidad (DNI, CE o pasaporte)</label>
+                                <input class="lr-input" id="lr-documento" name="documento" type="text" maxlength="20" required>
+                            </div>
+                            <div class="lr-campo">
+                                <label class="lr-label" for="lr-email">Correo electrónico</label>
+                                <input class="lr-input" id="lr-email" name="email" type="email" maxlength="254" required>
+                            </div>
+                        </div>
+                        <div class="lr-fila">
+                            <div class="lr-campo">
+                                <label class="lr-label" for="lr-telefono">Teléfono <span class="lr-opcional">· opcional</span></label>
+                                <input class="lr-input" id="lr-telefono" name="telefono" type="tel" maxlength="30">
+                            </div>
+                            <div class="lr-campo">
+                                <label class="lr-label" for="lr-apoderado">Padre, madre o apoderado <span class="lr-opcional">· solo si eres menor de edad</span></label>
+                                <input class="lr-input" id="lr-apoderado" name="apoderado" type="text" maxlength="200">
+                            </div>
+                        </div>
+
+                        <div class="lr-seccion">Identificación del bien contratado</div>
+                        <div class="lr-radios">
+                            <label class="lr-radio">
+                                <input type="radio" name="bien" value="producto" required>
+                                <span>Producto</span>
+                            </label>
+                            <label class="lr-radio">
+                                <input type="radio" name="bien" value="servicio">
+                                <span>Servicio</span>
+                            </label>
+                        </div>
+                        <div class="lr-campo" style="margin-top:14px;">
+                            <label class="lr-label" for="lr-descripcion">Descripción del producto o servicio</label>
+                            <input class="lr-input" id="lr-descripcion" name="descripcionBien" type="text" maxlength="500" required>
+                        </div>
+                        <div class="lr-campo">
+                            <label class="lr-label" for="lr-monto">Monto reclamado <span class="lr-opcional">· opcional</span></label>
+                            <input class="lr-input" id="lr-monto" name="monto" type="text" maxlength="30" placeholder="S/">
+                        </div>
+
+                        <div class="lr-seccion">Detalle</div>
+                        <div class="lr-campo">
+                            <label class="lr-label" for="lr-detalle">Describe lo ocurrido</label>
+                            <textarea class="lr-input" id="lr-detalle" name="detalle" maxlength="5000" required></textarea>
+                        </div>
+                        <div class="lr-campo">
+                            <label class="lr-label" for="lr-pedido">¿Qué solicitas?</label>
+                            <textarea class="lr-input" id="lr-pedido" name="pedido" maxlength="2000" required style="min-height:80px;"></textarea>
+                        </div>
+
+                        <label class="lr-check">
+                            <input type="checkbox" id="lr-conformidad" name="conformidad" required>
+                            <span>Confirmo que estoy conforme con los términos de esta hoja de reclamación.</span>
+                        </label>
+
+                        <div class="lr-error" id="lr-error" role="alert"></div>
+
+                        <button type="submit" class="lr-btn lr-btn-oro" id="lr-enviar">Registrar reclamación</button>
+
+                        <p class="lr-nota">
+                            Tus datos se usan únicamente para atender esta reclamación, conforme a la
+                            Ley 29733 de Protección de Datos Personales. La reclamación queda registrada
+                            con numeración correlativa y fecha, y podrás imprimirla o descargarla.
+                        </p>
+                    </form>
+                </div>
+
+                <!-- ===== CONSTANCIA ===== -->
+                <div id="lr-ok-estado" class="lr-ok" style="display:none;">
+                    <div style="text-align:center;">
+                        <div class="lr-ok-icono">
+                            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </div>
+                        <h2>Reclamación <em>registrada</em></h2>
+                        <div class="lr-codigo" id="lr-codigo">—</div>
+                        <p class="modal-intro" id="lr-fecha">—</p>
+                        <p class="modal-intro">
+                            Guarda este código. Responderemos en un plazo máximo de 15 días hábiles
+                            al correo que registraste.
+                        </p>
+                    </div>
+
+                    <dl class="lr-constancia" id="lr-constancia"></dl>
+
+                    <div class="lr-acciones">
+                        <button type="button" class="lr-btn lr-btn-oro" style="width:auto;margin:0;" onclick="window.print()">Imprimir</button>
+                        <button type="button" class="lr-btn lr-btn-linea" onclick="lrDescargar()">Descargar copia</button>
+                        <button type="button" class="lr-btn lr-btn-linea" onclick="closeModal('modal-libro-reclamaciones')">Cerrar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <script>
         // Animaciones de Scroll Revel
         const revealObserver = new IntersectionObserver((entries) => {
@@ -2690,6 +3046,168 @@
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024) closeMobileNav();
         });
+
+        /* ========================================================
+           LIBRO DE RECLAMACIONES (Art. 150 Ley 29571)
+           El codigo correlativo y la fecha los genera el Worker: la
+           fecha tiene valor legal y no puede depender del reloj del
+           navegador. Aqui solo se envia, se muestra la constancia y se
+           permite imprimirla o descargarla.
+           ======================================================== */
+
+        // Pegar aqui la URL del worker desplegado, p. ej.
+        // https://qori-reclamaciones-worker.<subdominio>.workers.dev/reclamo
+        const LR_ENDPOINT = 'PENDIENTE-URL-DEL-WORKER';
+
+        let lrUltima = null;
+
+        function lrError(msg) {
+            const e = document.getElementById('lr-error');
+            e.textContent = msg;
+            e.classList.add('show');
+            e.scrollIntoView({ block: 'center' });
+        }
+
+        function lrLimpiarError() {
+            document.getElementById('lr-error').classList.remove('show');
+        }
+
+        async function lrEnviar(ev) {
+            ev.preventDefault();
+            lrLimpiarError();
+
+            if (LR_ENDPOINT.startsWith('PENDIENTE')) {
+                lrError('El registro aun no esta configurado. Escribenos a soporte@universoqoriia.com y atenderemos tu reclamacion.');
+                return;
+            }
+
+            const form = document.getElementById('lr-form');
+            const fd = new FormData(form);
+            const datos = {
+                tipo: fd.get('tipo'),
+                bien: fd.get('bien'),
+                nombre: fd.get('nombre'),
+                documento: fd.get('documento'),
+                email: fd.get('email'),
+                telefono: fd.get('telefono') || '',
+                apoderado: fd.get('apoderado') || '',
+                descripcionBien: fd.get('descripcionBien'),
+                monto: fd.get('monto') || '',
+                detalle: fd.get('detalle'),
+                pedido: fd.get('pedido'),
+                conformidad: document.getElementById('lr-conformidad').checked,
+            };
+
+            const btn = document.getElementById('lr-enviar');
+            btn.classList.add('cargando');
+
+            try {
+                const res = await fetch(LR_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify(datos),
+                });
+                const r = await res.json();
+                if (!res.ok || !r.ok) {
+                    throw new Error(r && r.error === 'campos_invalidos'
+                        ? 'Revisa los campos obligatorios.'
+                        : 'No pudimos registrar tu reclamacion.');
+                }
+                lrUltima = { ...datos, codigo: r.codigo, fecha: r.fecha };
+                lrMostrarConstancia(lrUltima);
+            } catch (err) {
+                lrError('No pudimos registrar tu reclamacion. Intentalo de nuevo o escribenos a soporte@universoqoriia.com.');
+            } finally {
+                btn.classList.remove('cargando');
+            }
+        }
+
+        function lrMostrarConstancia(c) {
+            document.getElementById('lr-codigo').textContent = c.codigo;
+            document.getElementById('lr-fecha').textContent = 'Registrada el ' + c.fecha + ' (hora de Perú)';
+
+            const filas = [
+                ['Proveedor', 'QORI AI · RUC 10436928861'],
+                ['Domicilio', 'CALLE EDUARDO MENDOZA MZ.B LT.5 URB. LAS LILAS -  SANTIAGO DE SURCO'],
+                ['Tipo', c.tipo === 'reclamo' ? 'Reclamo' : 'Queja'],
+                ['Consumidor', c.nombre],
+                ['Documento', c.documento],
+                ['Correo', c.email],
+                ['Teléfono', c.telefono],
+                ['Apoderado', c.apoderado],
+                ['Bien contratado', c.bien === 'producto' ? 'Producto' : 'Servicio'],
+                ['Descripción', c.descripcionBien],
+                ['Monto reclamado', c.monto],
+                [c.tipo === 'reclamo' ? 'Detalle del reclamo' : 'Detalle de la queja', c.detalle],
+                ['Pedido', c.pedido],
+            ].filter(([, v]) => v);
+
+            document.getElementById('lr-constancia').innerHTML = filas
+                .map(([k, v]) => '<dt>' + k + '</dt><dd></dd>')
+                .join('');
+            // El valor se asigna como texto para no interpretar lo que escribio
+            // el consumidor como HTML.
+            const dds = document.querySelectorAll('#lr-constancia dd');
+            filas.forEach((f, i) => { if (dds[i]) dds[i].textContent = f[1]; });
+
+            document.getElementById('lr-form-estado').style.display = 'none';
+            document.getElementById('lr-ok-estado').style.display = '';
+            document.querySelector('#modal-libro-reclamaciones .modal').scrollTop = 0;
+        }
+
+        function lrDescargar() {
+            if (!lrUltima) return;
+            const c = lrUltima;
+            const lineas = [
+                'HOJA DE RECLAMACION ' + c.codigo,
+                'Registrada el ' + c.fecha + ' (hora de Peru)',
+                '',
+                'PROVEEDOR',
+                'QORI AI - RUC 10436928861',
+                'Domicilio: CALLE EDUARDO MENDOZA MZ.B LT.5 URB. LAS LILAS -  SANTIAGO DE SURCO',
+                '',
+                'CONSUMIDOR',
+                'Nombre: ' + c.nombre,
+                'Documento: ' + c.documento,
+                'Correo: ' + c.email,
+                'Telefono: ' + (c.telefono || '-'),
+                'Apoderado: ' + (c.apoderado || '-'),
+                '',
+                'BIEN CONTRATADO',
+                'Tipo: ' + (c.bien === 'producto' ? 'Producto' : 'Servicio'),
+                'Descripcion: ' + c.descripcionBien,
+                'Monto reclamado: ' + (c.monto || '-'),
+                '',
+                (c.tipo === 'reclamo' ? 'RECLAMO' : 'QUEJA'),
+                c.detalle,
+                '',
+                'PEDIDO DEL CONSUMIDOR',
+                c.pedido,
+                '',
+                'El consumidor confirmo su conformidad con los terminos de esta hoja.',
+                'Plazo de respuesta: 15 dias habiles (Ley 31435).',
+            ].join('\r\n');
+
+            const blob = new Blob([lineas], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = c.codigo + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }
+
+        // Cada apertura parte del formulario limpio, nunca de una constancia
+        // anterior: mostrar los datos de otra persona seria una fuga.
+        function openLibroReclamaciones() {
+            lrUltima = null;
+            document.getElementById('lr-form').reset();
+            lrLimpiarError();
+            document.getElementById('lr-form-estado').style.display = '';
+            document.getElementById('lr-ok-estado').style.display = 'none';
+            openModal('modal-libro-reclamaciones');
+        }
     </script>
 </body>
 </html>
