@@ -772,16 +772,16 @@
         /* --- formulario de pago --- */
         #modal-checkout .payment-form { background: var(--co-bg-card); border: 1px solid var(--co-line); border-radius: var(--co-r-lg); padding: 2.25rem; }
         #modal-checkout .payment-form h3 { font-size: 1.05rem; margin-bottom: 1.5rem; font-weight: 600; }
-        #modal-checkout .wallet-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.75rem; }
-        #modal-checkout .wallet-btn { padding: .95rem; border: 1px solid var(--co-line-2); border-radius: var(--co-r-sm); background: rgba(255,255,255,.02); color: var(--co-white); font-weight: 600; font-size: .88rem; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: .5rem; cursor: pointer; transition: all .3s var(--co-ease); }
-        #modal-checkout .wallet-btn:hover { border-color: var(--co-gold-line); background: rgba(255,255,255,.05); transform: translateY(-1px); }
-        #modal-checkout .form-divider { display: flex; align-items: center; gap: 1rem; margin: 1.75rem 0; color: var(--co-muted-2); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; }
-        #modal-checkout .form-divider::before, #modal-checkout .form-divider::after { content: ''; flex: 1; height: 1px; background: var(--co-line); }
-        #modal-checkout .payment-methods { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
-        #modal-checkout .payment-method { display: flex; align-items: center; gap: .5rem; padding: .55rem .9rem; border: 1px solid var(--co-line-2); border-radius: var(--co-r-sm); font-size: .72rem; font-weight: 600; color: var(--co-muted); background: rgba(255,255,255,.02); cursor: pointer; transition: all .3s var(--co-ease); letter-spacing: .03em; }
-        #modal-checkout .payment-method:hover { border-color: var(--co-gold-line); color: var(--co-white); }
-        #modal-checkout .payment-method.active { border-color: var(--co-gold); color: var(--co-gold); background: var(--co-gold-soft); }
-        #modal-checkout .payment-method.disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+        #modal-checkout .co-form-intro { font-size: .82rem; color: var(--co-muted); line-height: 1.6; margin: -.75rem 0 1.5rem; }
+        #modal-checkout .co-check { display: flex; align-items: flex-start; gap: .65rem; font-size: .8rem; color: var(--co-muted); line-height: 1.55; margin: .4rem 0 1.1rem; cursor: pointer; }
+        #modal-checkout .co-check input { margin-top: .2rem; width: 16px; height: 16px; accent-color: var(--co-gold); flex-shrink: 0; }
+        #modal-checkout .co-check a { color: var(--co-gold); text-decoration: underline; }
+        #modal-checkout .co-error { display: none; margin: 0 0 1rem; padding: .75rem 1rem; border: 1px solid rgba(255,140,120,.35); background: rgba(255,120,100,.08); border-radius: var(--co-r-sm); font-size: .82rem; color: #ffb4a2; line-height: 1.55; }
+        #modal-checkout .co-error.show { display: block; }
+        #modal-checkout .co-spinner { width: 56px; height: 56px; margin: 0 auto 2rem; border-radius: 50%; border: 3px solid var(--co-gold-line); border-top-color: var(--co-gold); animation: co-spin-plain .8s linear infinite; }
+        @keyframes co-spin-plain { to { transform: rotate(360deg); } }
+        /* Términos/Reembolsos se abren desde el checkout: deben quedar por encima de él. */
+        #modal-terminos, #modal-reembolsos { z-index: 110; }
         #modal-checkout .form-group { margin-bottom: 1.1rem; }
         #modal-checkout .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         #modal-checkout .form-label { display: block; font-size: .78rem; font-weight: 600; margin-bottom: .5rem; color: var(--co-muted); letter-spacing: .02em; }
@@ -791,8 +791,6 @@
         #modal-checkout select.form-input { cursor: pointer; appearance: none; padding-right: 2.5rem; }
         #modal-checkout .select-wrap { position: relative; }
         #modal-checkout .select-wrap .select-arrow { position: absolute; right: .85rem; top: 50%; transform: translateY(-50%); color: var(--co-gold); pointer-events: none; display: flex; }
-        #modal-checkout .input-with-icon { position: relative; }
-        #modal-checkout .input-with-icon .icon-right { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--co-muted); pointer-events: none; display: flex; }
         #modal-checkout .payment-footer { margin-top: 1.25rem; display: flex; align-items: center; gap: .5rem; font-size: .75rem; color: var(--co-muted-2); justify-content: center; text-align: center; line-height: 1.5; }
         #modal-checkout .payment-footer svg { color: var(--co-gold); flex-shrink: 0; }
         #modal-checkout .trust-badges { display: flex; gap: 1.25rem; justify-content: center; margin-top: 1.75rem; padding-top: 1.75rem; border-top: 1px solid var(--co-line); flex-wrap: wrap; }
@@ -834,7 +832,6 @@
         @media (max-width: 768px) {
             #modal-checkout .modal { padding: 28px 20px; }
             #modal-checkout .form-row { grid-template-columns: 1fr; }
-            #modal-checkout .wallet-buttons { grid-template-columns: 1fr; }
             #modal-checkout .payment-form { padding: 1.5rem; }
             #modal-checkout .order-summary { padding: 1.5rem; }
             #modal-checkout .billing-toggle { gap: .6rem; }
@@ -2061,13 +2058,13 @@
                     <li>Debes proporcionar información veraz al registrarte.</li>
                     <li>Las membresías (QORI FREE, PLUS, PRO, PRIORITY) otorgan acceso según lo descrito en cada plan al momento de tu suscripción.</li>
                     <li>Los beneficios de cada plan pueden actualizarse; te notificaremos cambios materiales con anticipación razonable.</li>
-                    <li>Puedes darte de baja de nuestras comunicaciones por correo en cualquier momento, usando el enlace de "cancelar suscripción" en cualquier correo o escribiendo a soporte@universoqoriia.com. Darte de baja de comunicaciones no cancela tu membresía activa — para eso, ve a la sección de cuenta.</li>
+                    <li>Puedes darte de baja de nuestras comunicaciones por correo en cualquier momento, usando el enlace de "cancelar suscripción" en cualquier correo o escribiendo a soporte@universoqoriia.com. Darte de baja de comunicaciones no cancela tu membresía activa — para eso, sigue el procedimiento de cancelación de la sección 3.</li>
                 </ul>
                 <h3>3. Pagos y facturación</h3>
                 <ul>
                     <li>Los precios están expresados en Soles peruanos (S/) e incluyen IGV cuando aplica.</li>
                     <li>Las suscripciones se renuevan automáticamente según el ciclo elegido (mensual o anual) hasta que canceles.</li>
-                    <li>Puedes cancelar en cualquier momento desde tu cuenta; la cancelación aplica al siguiente ciclo de facturación.</li>
+                    <li>Puedes cancelar en cualquier momento escribiendo a soporte@universoqoriia.com desde el correo con el que te suscribiste; la cancelación aplica al siguiente ciclo de facturación y te confirmaremos por correo cuando quede registrada.</li>
                 </ul>
                 <h3>4. Uso aceptable</h3>
                 <p>No está permitido: compartir credenciales de cuenta, redistribuir contenido pagado sin autorización, ni utilizar la plataforma con fines ilegales.</p>
@@ -2098,8 +2095,8 @@
             <div class="modal-content">
                 <h3>1. Datos que recopilamos</h3>
                 <ul>
-                    <li>Datos de registro: nombre, correo electrónico, teléfono.</li>
-                    <li>Datos de pago: procesados por Niubiz — QORI AI no almacena números de tarjeta completos.</li>
+                    <li>Datos de registro: nombre, correo electrónico, teléfono y, al suscribirte, dirección, ciudad y país (requeridos por nuestro procesador de pagos para la prevención de fraude).</li>
+                    <li>Datos de pago: procesados por Culqi — los datos de tu tarjeta se ingresan directamente en el formulario de Culqi y QORI AI nunca los recibe ni almacena; solo conservamos la marca y los últimos 4 dígitos.</li>
                     <li>Datos de uso: interacción con cursos, recursos y la plataforma.</li>
                 </ul>
                 <h3>2. Para qué usamos tus datos</h3>
@@ -2255,86 +2252,84 @@
 
                         <!-- PAYMENT FORM -->
                         <div class="payment-form">
-                            <h3>Información de pago</h3>
+                            <h3>Tus datos</h3>
+                            <p class="co-form-intro">Los datos de tu tarjeta los ingresarás en el siguiente paso, en el formulario seguro de Culqi.</p>
 
-                            <div class="wallet-buttons">
-                                <button class="wallet-btn" type="button">Apple Pay</button>
-                                <button class="wallet-btn" type="button">Google Pay</button>
-                            </div>
-
-                            <div class="form-divider">o paga con tarjeta</div>
-
-                            <div class="payment-methods">
-                                <div class="payment-method active" data-brand="visa">Visa</div>
-                                <div class="payment-method" data-brand="mastercard">Mastercard</div>
-                                <div class="payment-method" data-brand="amex">Amex</div>
-                                <div class="payment-method disabled" title="Próximamente">Yape</div>
-                                <div class="payment-method disabled" title="Próximamente">Plin</div>
-                            </div>
-
-                            <!-- Form prep for Stripe integration -->
+                            <!-- Culqi: la tarjeta se ingresa en Culqi Checkout (tokeniza en el navegador).
+                                 Este formulario solo recoge los datos del cliente que exige Culqi. -->
                             <form id="payment-form" onsubmit="processPayment(event)">
-                                <div class="form-group">
-                                    <label class="form-label">Nombre en la tarjeta</label>
-                                    <input type="text" class="form-input" placeholder="Carlos Mendoza" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Número de tarjeta</label>
-                                    <div class="input-with-icon">
-                                        <input type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" id="card-number" required>
-                                        <span class="icon-right" id="card-brand" data-brand="visa">
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                                        </span>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="co-first-name">Nombres</label>
+                                        <input type="text" class="form-input" id="co-first-name" autocomplete="given-name" placeholder="Carlos" minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿñÑ ]{2,50}" title="Solo letras y espacios" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="co-last-name">Apellidos</label>
+                                        <input type="text" class="form-input" id="co-last-name" autocomplete="family-name" placeholder="Mendoza" minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿñÑ ]{2,50}" title="Solo letras y espacios" required>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="form-label">Vencimiento</label>
-                                        <input type="text" class="form-input" placeholder="MM / YY" maxlength="7" id="card-exp" required>
+                                        <label class="form-label" for="co-email">Correo electrónico</label>
+                                        <input type="email" class="form-input" id="co-email" autocomplete="email" placeholder="tucorreo@ejemplo.com" minlength="5" maxlength="50" required>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">CVV</label>
-                                        <input type="text" class="form-input" placeholder="123" maxlength="4" id="card-cvv" required>
+                                        <label class="form-label" for="co-phone">Celular</label>
+                                        <input type="tel" class="form-input" id="co-phone" autocomplete="tel" placeholder="987 654 321" minlength="5" maxlength="18" pattern="\+?[0-9 \-]{5,18}" title="Solo números" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Correo electrónico</label>
-                                    <input type="email" class="form-input" placeholder="tucorreo@ejemplo.com" required>
+                                    <label class="form-label" for="co-address">Dirección</label>
+                                    <input type="text" class="form-input" id="co-address" autocomplete="street-address" placeholder="Av. Brasil 123, Jesús María" minlength="5" maxlength="100" required>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">País / Región</label>
-                                    <div class="select-wrap">
-                                        <select class="form-input" required id="country-select">
-                                            <option value="" disabled>Selecciona tu país</option>
-                                            <option value="PE" selected>Perú</option>
-                                            <option value="MX">México</option>
-                                            <option value="CO">Colombia</option>
-                                            <option value="AR">Argentina</option>
-                                            <option value="CL">Chile</option>
-                                            <option value="EC">Ecuador</option>
-                                            <option value="ES">España</option>
-                                            <option value="US">Estados Unidos</option>
-                                            <option value="OT">Otro</option>
-                                        </select>
-                                        <span class="select-arrow">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-                                        </span>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="co-city">Ciudad</label>
+                                        <input type="text" class="form-input" id="co-city" autocomplete="address-level2" placeholder="Lima" minlength="2" maxlength="30" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="country-select">País</label>
+                                        <div class="select-wrap">
+                                            <select class="form-input" required id="country-select" autocomplete="country">
+                                                <option value="PE" selected>Perú</option>
+                                                <option value="AR">Argentina</option>
+                                                <option value="BO">Bolivia</option>
+                                                <option value="BR">Brasil</option>
+                                                <option value="CL">Chile</option>
+                                                <option value="CO">Colombia</option>
+                                                <option value="EC">Ecuador</option>
+                                                <option value="ES">España</option>
+                                                <option value="US">Estados Unidos</option>
+                                                <option value="MX">México</option>
+                                                <option value="PA">Panamá</option>
+                                                <option value="PY">Paraguay</option>
+                                                <option value="UY">Uruguay</option>
+                                                <option value="VE">Venezuela</option>
+                                            </select>
+                                            <span class="select-arrow">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
+                                <label class="co-check">
+                                    <input type="checkbox" id="co-tyc" required>
+                                    <span>Acepto los <a href="javascript:void(0)" onclick="openModal('modal-terminos')">Términos y Condiciones</a> y la <a href="javascript:void(0)" onclick="openModal('modal-reembolsos')">Política de Reembolsos</a>, y autorizo el cobro automático de mi membresía en cada ciclo hasta que la cancele.</span>
+                                </label>
+                                <div class="co-error" id="co-error" role="alert"></div>
                                 <button type="submit" class="btn btn-gold btn-block" id="pay-btn" style="margin-top:.5rem;">
-                                    <span id="pay-btn-text">Pagar —  · Suscribirme</span>
+                                    <span id="pay-btn-text">Continuar al pago seguro</span>
                                 </button>
                                 <div class="payment-footer">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                    Pago encriptado de extremo a extremo · No almacenamos tu tarjeta
+                                    Pago procesado por Culqi · Los datos de tu tarjeta nunca pasan por nuestros servidores
                                 </div>
                                 <div class="trust-badges">
                                     <div class="trust-badge">Visa</div>
                                     <div class="trust-badge">Mastercard</div>
                                     <div class="trust-badge">Amex</div>
-                                    <div class="trust-badge">Apple Pay</div>
-                                    <div class="trust-badge">Google Pay</div>
-                                    <div class="trust-badge">SSL 256-bit</div>
+                                    <div class="trust-badge">Diners Club</div>
+                                    <div class="trust-badge">3-D Secure</div>
                                 </div>
                             </form>
                         </div>
@@ -2348,11 +2343,11 @@
                             <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                         </div>
                         <h1>¡Bienvenido a <span class="gold-text">QORI AI</span>!</h1>
-                        <p>Tu membresía está activa. Hemos enviado los detalles de acceso a tu correo electrónico.</p>
+                        <p>Tu membresía <strong id="co-success-plan">—</strong> está activa.</p>
                         <div class="success-steps">
                             <div class="success-step">
                                 <div class="success-step-num">1</div>
-                                <div><h4>Revisa tu correo</h4><p>Te enviamos tus credenciales de acceso y la guía de inicio.</p></div>
+                                <div><h4>Revisa tu correo</h4><p>Te enviamos la confirmación de tu suscripción a <strong id="co-success-email">—</strong>. Si no la ves, revisa tu carpeta de spam.</p></div>
                             </div>
                             <div class="success-step">
                                 <div class="success-step-num">2</div>
@@ -2366,6 +2361,21 @@
                         <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
                             <button class="btn btn-gold" onclick="closeModal('modal-checkout')">Ir al inicio</button>
                             <button class="btn btn-outline" onclick="resetCheckout()">Volver a planes</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ESTADO: CONFIRMANDO / PENDIENTE =====
+                     Suscripción creada pero sin primer cobro confirmado (status Culqi 1/5),
+                     o resultado incierto (202). No se ofrece "reintentar" para evitar doble cobro. -->
+                <div id="co-pending-state" style="display:none;">
+                    <div class="success-content">
+                        <div class="co-spinner" id="co-pending-spinner" aria-hidden="true"></div>
+                        <h1 id="co-pending-title">Confirmando tu pago…</h1>
+                        <p id="co-pending-msg">Estamos confirmando tu primer cobro con el banco. No cierres esta ventana.</p>
+                        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap" id="co-pending-actions" hidden>
+                            <button class="btn btn-gold" onclick="closeModal('modal-checkout')">Entendido</button>
+                            <a class="btn btn-outline" href="mailto:soporte@universoqoriia.com">Escribir a soporte</a>
                         </div>
                     </div>
                 </div>
@@ -2751,10 +2761,16 @@
         }
 
         function closeModal(id) {
+            if (id === 'modal-checkout' && coBusy &&
+                !confirm('Tu pago está en proceso. Si cierras esta ventana podrías no ver la confirmación. ¿Cerrar de todos modos?')) {
+                return;
+            }
             const modal = document.getElementById(id);
             if (modal) {
                 modal.style.display = 'none';
-                document.body.style.overflow = '';
+                // Solo liberar el scroll si no queda otro modal abierto (p. ej. Términos sobre el checkout).
+                const anyOpen = [...document.querySelectorAll('.modal-backdrop')].some(m => m.style.display === 'flex');
+                if (!anyOpen) document.body.style.overflow = '';
             }
         }
 
@@ -2796,34 +2812,71 @@
         }
 
         /* ========================================================
-           CHECKOUT (portado desde checkout-site)
+           CHECKOUT — suscripciones con Culqi
            El plan NUNCA se toma del marcado ni de un valor por
            defecto: openCheckout(plan) exige un plan explícito y
            renderiza antes de abrir el modal. Por eso el resumen
            arranca en "—" y no en los datos de un plan concreto.
+
+           Flujo: datos del cliente (este formulario) → Culqi Checkout
+           tokeniza la tarjeta (los datos de tarjeta nunca tocan esta
+           página) → qori-payments-worker crea cliente, tarjeta (con 3DS
+           si el banco lo pide) y suscripción.
+
+           Montos: total con IGV, en céntimos. Deben coincidir con
+           PLAN_PRICES del Worker, que además los verifica contra Culqi.
            ======================================================== */
+        const PAY_API = 'https://qori-payments-worker.qoriaiofficial.workers.dev';
+        const CULQI_CHECKOUT_JS = 'https://js.culqi.com/checkout-js';
+        const CULQI_3DS_JS = 'https://3ds.culqi.com';
+        const CO_SUPPORT = 'soporte@universoqoriia.com';
+
         const CO_PLANS = {
             plus: {
                 name: 'QORI PLUS',
                 tag: 'PLUS',
                 desc: 'Cursos, automatización, biblioteca premium, prompts, talleres y recursos exclusivos.',
-                monthly: 29,
-                annual: 374
+                monthly: { code: 'qori-plus-mensual', amount: 3422 },   // S/ 34.22
+                annual:  { code: 'qori-plus-anual',   amount: 32851 }   // S/ 328.51 = 12 × 34.22 − 20%
             },
             pro: {
                 name: 'QORI PRO',
                 tag: 'PRO · RECOMENDADO',
                 desc: 'Ruta completa de aprendizaje, mentoría, proyectos, estrategia, herramientas avanzadas y acceso prioritario.',
-                monthly: 79,
-                annual: 950
+                monthly: { code: 'qori-pro-mensual', amount: 9322 },    // S/ 93.22
+                annual:  { code: 'qori-pro-anual',   amount: 89491 }    // S/ 894.91 = 12 × 93.22 − 20%
             }
         };
         let coCurrentPlan = null;
         let coIsAnnual = false;
+        let coBusy = false;       // pago en curso: no cambiar de plan ni cerrar sin confirmar
+        let coAttempt = null;     // { key, planCode, amount, planLabel, customer, tokenId }
+        let coCulqi = null;       // instancia de CulqiCheckout del intento actual
+        let coPayConfig = null;   // /api/config del Worker (llave pública y precios)
+        let co3DSToken = null;    // token que espera el resultado de Culqi3DS
+        let co3DSTimer = null;
+        let coPollTimer = null;
+
+        class CoUserError extends Error {}
+        const coSleep = ms => new Promise(r => setTimeout(r, ms));
+
+        function coSelected() {
+            const p = CO_PLANS[coCurrentPlan];
+            return p ? { plan: p, ...(coIsAnnual ? p.annual : p.monthly) } : null;
+        }
+
+        function coMoney(cents) {
+            const [int, dec] = (cents / 100).toFixed(2).split('.');
+            return 'S/ ' + int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + dec;
+        }
 
         function openCheckout(plan) {
             if (!CO_PLANS[plan]) {
                 console.error('openCheckout: plan desconocido ->', plan);
+                return;
+            }
+            if (coBusy) {   // hay un pago en curso: solo volver a mostrarlo
+                openModal('modal-checkout');
                 return;
             }
             coCurrentPlan = plan;
@@ -2832,15 +2885,48 @@
             openModal('modal-checkout');
         }
 
-        // Vuelve al formulario (oculta el estado de éxito) sin perder el plan.
+        // Vuelve al formulario (oculta éxito/pendiente) sin perder el plan.
         function resetCheckout() {
-            document.getElementById('co-checkout-state').style.display = '';
-            document.getElementById('co-success-state').style.display = 'none';
+            if (coBusy) return;
+            clearTimeout(coPollTimer);
+            coAttempt = null;
+            coHideError();
+            coSetPayLoading(false);
+            coShowState('form');
+        }
+
+        function coShowState(name) {
+            document.getElementById('co-checkout-state').style.display = name === 'form' ? '' : 'none';
+            document.getElementById('co-success-state').style.display = name === 'success' ? '' : 'none';
+            document.getElementById('co-pending-state').style.display = name === 'pending' ? '' : 'none';
+            const modal = document.querySelector('#modal-checkout .modal');
+            if (modal) modal.scrollTop = 0;
+        }
+
+        function coShowError(msg) {
+            const el = document.getElementById('co-error');
+            el.textContent = msg;
+            el.classList.add('show');
+            el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        function coHideError() {
+            document.getElementById('co-error').classList.remove('show');
+        }
+
+        function coSetPayLoading(on) {
             const btn = document.getElementById('pay-btn');
-            if (btn) btn.classList.remove('loading');
+            btn.classList.toggle('loading', on);
+            btn.disabled = on;
+        }
+
+        function coSetBusy(on) {
+            coBusy = on;
+            coSetPayLoading(on);
         }
 
         function toggleBilling() {
+            if (coBusy) return;
             const t = document.getElementById('billingToggle');
             t.classList.toggle('annual');
             coIsAnnual = t.classList.contains('annual');
@@ -2853,82 +2939,310 @@
         }
 
         function updateCheckout() {
-            const p = CO_PLANS[coCurrentPlan];
-            if (!p) return;
+            const s = coSelected();
+            if (!s) return;
 
-            document.getElementById('summaryName').textContent = p.name;
-            document.getElementById('summaryTag').textContent = p.tag;
-            document.getElementById('summaryDesc').textContent = p.desc;
-            document.getElementById('summaryPlanLabel').textContent = p.name;
-
-            const price = coIsAnnual ? p.annual : p.monthly;
+            document.getElementById('summaryName').textContent = s.plan.name;
+            document.getElementById('summaryTag').textContent = s.plan.tag;
+            document.getElementById('summaryDesc').textContent = s.plan.desc;
+            document.getElementById('summaryPlanLabel').textContent = s.plan.name;
             document.getElementById('summaryCycle').textContent = coIsAnnual ? 'Anual' : 'Mensual';
 
-            const sub = price;
-            const tax = sub * 0.18;
-            const total = sub + tax;
-
-            document.getElementById('summarySubtotal').textContent = 'S/ ' + sub.toFixed(2);
-            document.getElementById('summaryTax').textContent = 'S/ ' + tax.toFixed(2);
-            document.getElementById('summaryTotal').textContent = 'S/ ' + total.toFixed(2);
-            document.getElementById('pay-btn-text').textContent = 'Pagar S/ ' + total.toFixed(2) + ' · Suscribirme';
+            // El monto cobrado es el total con IGV; el subtotal y el IGV se desglosan a partir de él.
+            const total = s.amount;
+            const subtotal = Math.round(total / 1.18);
+            document.getElementById('summarySubtotal').textContent = coMoney(subtotal);
+            document.getElementById('summaryTax').textContent = coMoney(total - subtotal);
+            document.getElementById('summaryTotal').textContent = coMoney(total);
+            document.getElementById('pay-btn-text').textContent = 'Continuar al pago seguro · ' + coMoney(total);
         }
 
-        function processPayment(e) {
-            e.preventDefault();
-            const btn = document.getElementById('pay-btn');
-            btn.classList.add('loading');
-
-            setTimeout(() => {
-                btn.classList.remove('loading');
-                document.getElementById('co-checkout-state').style.display = 'none';
-                document.getElementById('co-success-state').style.display = '';
-                document.querySelector('#modal-checkout .modal').scrollTop = 0;
-            }, 1800);
+        /* ===== Carga diferida de las librerías de Culqi (solo al pagar) ===== */
+        const coScripts = {};
+        function coLoadScript(src) {
+            if (!coScripts[src]) {
+                coScripts[src] = new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = src;
+                    s.async = true;
+                    s.onload = () => resolve();
+                    s.onerror = () => { delete coScripts[src]; reject(new Error('No se pudo cargar ' + src)); };
+                    document.head.appendChild(s);
+                });
+            }
+            return coScripts[src];
         }
 
-        /* ===== Selección de método de pago ===== */
-        document.querySelectorAll('#modal-checkout .payment-method:not(.disabled)').forEach(m => {
-            m.addEventListener('click', () => {
-                document.querySelectorAll('#modal-checkout .payment-method').forEach(x => x.classList.remove('active'));
-                m.classList.add('active');
-                const brandEl = document.getElementById('card-brand');
-                if (brandEl) brandEl.dataset.brand = m.dataset.brand;
-            });
-        });
-
-        /* ===== Formato de los campos de tarjeta ===== */
-        const coCardNum = document.getElementById('card-number');
-        if (coCardNum) {
-            coCardNum.addEventListener('input', e => {
-                let v = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
-                v = v.match(/.{1,4}/g)?.join(' ') || '';
-                e.target.value = v;
-
-                const first = v[0];
-                const brandEl = document.getElementById('card-brand');
-                if (!brandEl) return;
-                if (first === '4') brandEl.dataset.brand = 'visa';
-                else if (first === '5') brandEl.dataset.brand = 'mastercard';
-                else if (first === '3') brandEl.dataset.brand = 'amex';
-                else brandEl.dataset.brand = '';
-            });
+        async function coGetPayConfig() {
+            if (coPayConfig) return coPayConfig;
+            const res = await fetch(PAY_API + '/api/config');
+            if (!res.ok) throw new Error('config HTTP ' + res.status);
+            coPayConfig = await res.json();
+            return coPayConfig;
         }
 
-        const coCardExp = document.getElementById('card-exp');
-        if (coCardExp) {
-            coCardExp.addEventListener('input', e => {
-                let v = e.target.value.replace(/\D/g, '');
-                if (v.length >= 3) v = v.slice(0, 2) + ' / ' + v.slice(2, 4);
-                e.target.value = v;
-            });
+        function coReadCustomer() {
+            const v = id => document.getElementById(id).value.trim().replace(/\s+/g, ' ');
+            return {
+                first_name: v('co-first-name'),
+                last_name: v('co-last-name'),
+                email: v('co-email').toLowerCase(),
+                phone_number: v('co-phone').replace(/[\s-]/g, ''),
+                address: v('co-address'),
+                address_city: v('co-city'),
+                country_code: document.getElementById('country-select').value
+            };
         }
 
-        const coCardCvv = document.getElementById('card-cvv');
-        if (coCardCvv) {
-            coCardCvv.addEventListener('input', e => {
-                e.target.value = e.target.value.replace(/\D/g, '');
+        /* ===== Paso 1: validar datos y abrir Culqi Checkout ===== */
+        async function processPayment(e) {
+            e.preventDefault();   // la validación nativa (required/pattern/checkbox) ya pasó
+            if (coBusy) return;
+            coHideError();
+            const sel = coSelected();
+            if (!sel) return;
+            const customer = coReadCustomer();
+
+            coSetPayLoading(true);
+            try {
+                const cfg = await coGetPayConfig();
+                const remote = cfg.plans && cfg.plans[sel.code];
+                if (!remote || !remote.available || remote.amount !== sel.amount || remote.currency !== 'PEN') {
+                    throw new CoUserError('Este plan no está disponible en este momento. Escríbenos a ' + CO_SUPPORT + '.');
+                }
+                await Promise.all([coLoadScript(CULQI_CHECKOUT_JS), coLoadScript(CULQI_3DS_JS)]);
+
+                coAttempt = {
+                    key: crypto.randomUUID(),   // un intento = una llave; el Worker lo procesa una sola vez
+                    planCode: sel.code,
+                    amount: sel.amount,
+                    planLabel: sel.plan.name + ' ' + (coIsAnnual ? 'Anual' : 'Mensual'),
+                    customer,
+                    tokenId: null
+                };
+                coOpenCulqi(cfg.publicKey);
+            } catch (err) {
+                console.error('[checkout]', err);
+                coShowError(err instanceof CoUserError ? err.message
+                    : 'No pudimos iniciar el pago. Revisa tu conexión e inténtalo nuevamente.');
+            } finally {
+                coSetPayLoading(false);
+            }
+        }
+
+        function coOpenCulqi(publicKey) {
+            const a = coAttempt;
+            coCulqi = new CulqiCheckout(publicKey, {
+                settings: { title: 'QORI AI · ' + a.planLabel, currency: 'PEN', amount: a.amount },
+                client: { email: a.customer.email },
+                options: {
+                    lang: 'es',
+                    installments: false,
+                    modal: true,
+                    paymentMethods: { tarjeta: true, yape: false, billetera: false, bancaMovil: false, agente: false, cuotealo: false },
+                    paymentMethodsSort: ['tarjeta']
+                },
+                appearance: {
+                    theme: 'default',
+                    hiddenCulqiLogo: false,
+                    hiddenBannerContent: false,
+                    hiddenBanner: false,
+                    hiddenToolBarAmount: false,
+                    hiddenEmail: true,   // ya lo tenemos del formulario
+                    menuType: 'select',
+                    buttonCardPayText: 'Suscribirme · ' + coMoney(a.amount),
+                    logo: null,
+                    defaultStyle: {
+                        bannerColor: '#0A0A0A',
+                        buttonBackground: '#D4AF37',
+                        menuColor: '#D4AF37',
+                        linksColor: '#D4AF37',
+                        buttonTextColor: '#1A1505',
+                        priceColor: '#D4AF37'
+                    }
+                }
             });
+            coCulqi.culqi = coOnCulqiResult;
+            coCulqi.open();
+        }
+
+        function coOnCulqiResult() {
+            const c = coCulqi;
+            if (!c || !coAttempt || coBusy) return;
+            if (c.token && c.token.id) {
+                c.close();
+                coAttempt.tokenId = c.token.id;
+                coSetBusy(true);
+                coSubmit();
+            } else if (c.error) {
+                // Culqi muestra el error en su formulario; lo repetimos por si el cliente lo cierra.
+                coShowError((c.error && c.error.user_message) || 'No pudimos validar tu tarjeta. Revisa los datos e inténtalo nuevamente.');
+            }
+        }
+
+        /* ===== Paso 2: enviar el token al Worker ===== */
+        async function coSubmit(authentication3DS) {
+            const a = coAttempt;
+            const body = { idempotencyKey: a.key, planCode: a.planCode, tokenId: a.tokenId, tyc: true, customer: a.customer };
+            if (authentication3DS) body.authentication3DS = authentication3DS;
+
+            let res, data;
+            for (let i = 0; ; i++) {
+                try {
+                    res = await fetch(PAY_API + '/api/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    data = await res.json().catch(() => ({}));
+                    // El Worker todavía procesa este mismo intento (p. ej. tras un reintento de red): esperar.
+                    if (res.status === 409 && data.error === 'duplicate_request' && i < 5) { await coSleep(3000); continue; }
+                    // 5xx sin cuerpo del Worker (caída de la plataforma): resultado incierto, reintentar con la misma llave.
+                    if (res.status >= 500 && !data.error && i < 3) { await coSleep(2000 * (i + 1)); continue; }
+                    break;
+                } catch (err) {
+                    // Sin respuesta: el intento pudo haberse procesado. Reintentar con la MISMA llave es seguro.
+                    if (i < 3) { await coSleep(2000 * (i + 1)); continue; }
+                    return coShowUncertain(a.customer.email);
+                }
+            }
+            if (res.status >= 500 && !data.error) return coShowUncertain(a.customer.email);
+            coHandleResult(data);
+        }
+
+        function coShowUncertain(email) {
+            coShowPending(
+                'No pudimos confirmar si tu pago se procesó por un problema de conexión. No vuelvas a pagar todavía: ' +
+                'revisa tu correo (' + email + ') o escríbenos a ' + CO_SUPPORT + ' y lo verificamos.',
+                'No pudimos confirmar tu pago');
+        }
+
+        function coHandleResult(data) {
+            if (data.status === 'needs_3ds') return coStart3DS();
+            if (data.status === 'created') {
+                return data.active ? coShowSuccess() : coConfirm(data.subscriptionId);
+            }
+            if (data.status === 'pending_confirmation') {
+                return coShowPending(data.message || 'Estamos confirmando tu suscripción. No vuelvas a pagar: te escribiremos en cuanto se confirme.');
+            }
+            // Error definitivo para este intento: se puede reintentar (Culqi pedirá la tarjeta otra vez).
+            const msg = data.message || (Array.isArray(data.messages) ? data.messages.join(' ') : '');
+            coFail(msg || 'No pudimos procesar tu pago. Inténtalo nuevamente en unos minutos.');
+        }
+
+        /* ===== 3DS: el banco pide autenticar al titular ===== */
+        async function coStart3DS() {
+            const a = coAttempt;
+            try {
+                Culqi3DS.publicKey = coPayConfig.publicKey;
+                Culqi3DS.settings = {
+                    charge: { totalAmount: a.amount, returnUrl: window.location.origin + window.location.pathname, currency: 'PEN' },
+                    card: { email: a.customer.email }
+                };
+                Culqi3DS.options = {
+                    showModal: true,
+                    showLoading: true,
+                    showIcon: true,
+                    style: { btnColor: '#D4AF37', btnTextColor: '#1A1505' }
+                };
+                co3DSToken = a.tokenId;
+                // Si el cliente abandona la verificación y no llega respuesta, liberar el checkout.
+                clearTimeout(co3DSTimer);
+                co3DSTimer = setTimeout(() => {
+                    if (!co3DSToken) return;
+                    co3DSToken = null;
+                    coFail('La verificación de tu banco no se completó a tiempo. Puedes intentarlo nuevamente.');
+                }, 10 * 60 * 1000);
+                await Culqi3DS.initAuthentication(a.tokenId);
+            } catch (err) {
+                console.error('[checkout] 3DS', err);
+                co3DSToken = null;
+                clearTimeout(co3DSTimer);
+                coFail('No pudimos iniciar la verificación de tu banco. Inténtalo nuevamente.');
+            }
+        }
+
+        // Culqi3DS entrega el resultado con postMessage desde este mismo origen.
+        window.addEventListener('message', event => {
+            if (event.origin !== window.location.origin || !co3DSToken) return;
+            const r = event.data;
+            if (!r || typeof r !== 'object') return;
+            if (r.parameters3DS && typeof r.parameters3DS === 'object') {
+                co3DSToken = null;
+                clearTimeout(co3DSTimer);
+                coSubmit(r.parameters3DS);   // mismo token y misma llave, ahora con los parámetros 3DS
+            } else if (r.error) {
+                co3DSToken = null;
+                clearTimeout(co3DSTimer);
+                coFail('Tu banco no completó la verificación de seguridad. Puedes intentarlo nuevamente o usar otra tarjeta.');
+            }
+        }, false);
+
+        function coReset3DS() {
+            try { if (window.Culqi3DS) Culqi3DS.reset(); } catch (_) { /* nada que limpiar */ }
+        }
+
+        /* ===== Paso 3: resultado ===== */
+        // Suscripción creada pero el primer cobro aún no se confirma (status 1/5): consultar al Worker.
+        function coConfirm(subscriptionId) {
+            const email = coAttempt.customer.email;
+            coSetBusy(false);   // ya existe la suscripción: cerrar la ventana no causa doble cobro
+            coReset3DS();
+            coPendingView('Confirmando tu pago…', 'Tu suscripción fue creada. Estamos confirmando el primer cobro con tu banco; esto puede tomar unos segundos.', true);
+            let tries = 0;
+            const tick = async () => {
+                tries++;
+                try {
+                    const res = await fetch(PAY_API + '/api/subscription/' + encodeURIComponent(subscriptionId));
+                    const d = await res.json();
+                    if (res.ok && d.active) return coShowSuccess();
+                    if (res.ok && (d.status === 4 || d.status === 6)) {
+                        return coPendingView('No pudimos completar tu suscripción',
+                            'Tu banco no confirmó el primer cobro y la suscripción no quedó activa. Escríbenos a ' + CO_SUPPORT + ' y te ayudamos.', false);
+                    }
+                } catch (_) { /* reintentar en el siguiente ciclo */ }
+                if (tries >= 20) {
+                    return coPendingView('Tu pago está en confirmación',
+                        'Tu suscripción fue creada y el primer cobro sigue en confirmación. Te escribiremos a ' + email +
+                        ' en cuanto se confirme. No es necesario que vuelvas a pagar.', false);
+                }
+                coPollTimer = setTimeout(tick, 3000);
+            };
+            clearTimeout(coPollTimer);
+            coPollTimer = setTimeout(tick, 2000);
+        }
+
+        function coShowSuccess() {
+            const a = coAttempt;
+            clearTimeout(coPollTimer);
+            coSetBusy(false);
+            coReset3DS();
+            document.getElementById('co-success-plan').textContent = a ? a.planLabel : '';
+            document.getElementById('co-success-email').textContent = a ? a.customer.email : 'tu correo';
+            coAttempt = null;
+            coShowState('success');
+        }
+
+        function coShowPending(msg, title) {
+            coSetBusy(false);
+            coReset3DS();
+            coPendingView(title || 'Estamos confirmando tu pago', msg, false);
+        }
+
+        function coPendingView(title, msg, spinning) {
+            document.getElementById('co-pending-title').textContent = title;
+            document.getElementById('co-pending-msg').textContent = msg;
+            document.getElementById('co-pending-spinner').style.display = spinning ? '' : 'none';
+            document.getElementById('co-pending-actions').hidden = spinning;
+            coShowState('pending');
+        }
+
+        function coFail(msg) {
+            coSetBusy(false);
+            coReset3DS();
+            coAttempt = null;   // el próximo intento usa llave y token nuevos
+            coShowState('form');
+            coShowError(msg);
         }
 
         /* ========================================================
