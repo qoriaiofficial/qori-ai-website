@@ -829,6 +829,9 @@
         #modal-checkout .success-step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--co-gold-soft); border: 1px solid var(--co-gold-line); color: var(--co-gold); font-weight: 700; font-size: .9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         #modal-checkout .success-step h4 { font-size: .95rem; margin-bottom: .2rem; font-weight: 600; }
         #modal-checkout .success-step p { font-size: .82rem; color: var(--co-muted); margin: 0; line-height: 1.55; }
+        #modal-checkout .co-community-btn { margin-top: .85rem; padding: .7rem 1.25rem; font-size: .85rem; }
+        #modal-checkout .co-community-btn[hidden], #modal-checkout .co-community-fallback[hidden] { display: none; }
+        #modal-checkout .co-community-fallback { margin-top: .6rem !important; color: var(--co-gold) !important; }
 
         /* --- pie legal --- */
         #modal-checkout .co-legal { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--co-line); text-align: center; }
@@ -2363,11 +2366,17 @@
                             </div>
                             <div class="success-step">
                                 <div class="success-step-num">2</div>
-                                <div><h4>Configura tu perfil</h4><p>Completa tu información para personalizar tu ruta de aprendizaje.</p></div>
+                                <div>
+                                    <h4>Únete a la comunidad QORI</h4>
+                                    <p>Tu acceso es inmediato: entra al grupo de WhatsApp de miembros, donde compartimos los recursos, talleres y novedades de tu membresía.</p>
+                                    <!-- El enlace NO está en el HTML público: lo entrega el Worker solo con la suscripción activa. -->
+                                    <a class="btn btn-gold co-community-btn" id="co-community-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Unirme al grupo de WhatsApp</a>
+                                    <p class="co-community-fallback" id="co-community-fallback" hidden>Te enviamos el enlace de acceso a tu correo.</p>
+                                </div>
                             </div>
                             <div class="success-step">
                                 <div class="success-step-num">3</div>
-                                <div><h4>Comienza tu primer módulo</h4><p>Tu ruta está lista. Tu primer módulo te espera en el dashboard.</p></div>
+                                <div><h4>Preséntate</h4><p>Cuéntanos quién eres y qué quieres lograr con la IA. Si tienes cualquier duda, escríbenos a soporte@universoqoriia.com.</p></div>
                             </div>
                         </div>
                         <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
@@ -3132,7 +3141,7 @@
         function coHandleResult(data) {
             if (data.status === 'needs_3ds') return coStart3DS();
             if (data.status === 'created') {
-                return data.active ? coShowSuccess() : coConfirm(data.subscriptionId);
+                return data.active ? coShowSuccess(data.communityUrl) : coConfirm(data.subscriptionId);
             }
             if (data.status === 'pending_confirmation') {
                 return coShowPending(data.message || 'Estamos confirmando tu suscripción. No vuelvas a pagar: te escribiremos en cuanto se confirme.');
@@ -3207,7 +3216,7 @@
                 try {
                     const res = await fetch(PAY_API + '/api/subscription/' + encodeURIComponent(subscriptionId));
                     const d = await res.json();
-                    if (res.ok && d.active) return coShowSuccess();
+                    if (res.ok && d.active) return coShowSuccess(d.communityUrl);
                     if (res.ok && (d.status === 4 || d.status === 6)) {
                         return coPendingView('No pudimos completar tu suscripción',
                             'Tu banco no confirmó el primer cobro y la suscripción no quedó activa. Escríbenos a ' + CO_SUPPORT + ' y te ayudamos.', false);
@@ -3224,13 +3233,19 @@
             coPollTimer = setTimeout(tick, 2000);
         }
 
-        function coShowSuccess() {
+        // communityUrl llega del Worker solo cuando la suscripción está activa (no vive en este HTML).
+        function coShowSuccess(communityUrl) {
             const a = coAttempt;
             clearTimeout(coPollTimer);
             coSetBusy(false);
             coReset3DS();
             document.getElementById('co-success-plan').textContent = a ? a.planLabel : '';
             document.getElementById('co-success-email').textContent = a ? a.customer.email : 'tu correo';
+            const link = document.getElementById('co-community-link');
+            const ok = typeof communityUrl === 'string' && /^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]+$/.test(communityUrl);
+            link.href = ok ? communityUrl : '#';
+            link.hidden = !ok;
+            document.getElementById('co-community-fallback').hidden = ok;   // sin enlace: se lo mandamos por correo
             coAttempt = null;
             coShowState('success');
         }
