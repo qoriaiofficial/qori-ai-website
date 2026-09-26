@@ -2477,26 +2477,26 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Nombre completo</label>
-                                    <input type="text" class="form-input" placeholder="Carlos Mendoza" required>
+                                    <input type="text" id="pr-nombre" name="nombre" class="form-input" placeholder="Carlos Mendoza" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Cargo</label>
-                                    <input type="text" class="form-input" placeholder="CEO / Director / Líder" required>
+                                    <input type="text" id="pr-cargo" name="cargo" class="form-input" placeholder="CEO / Director / Líder" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Empresa</label>
-                                    <input type="text" class="form-input" placeholder="Tu empresa" required>
+                                    <input type="text" id="pr-empresa" name="empresa" class="form-input" placeholder="Tu empresa" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Correo corporativo</label>
-                                    <input type="email" class="form-input" placeholder="carlos@empresa.com" required>
+                                    <input type="email" id="pr-email" name="email" class="form-input" placeholder="carlos@empresa.com" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Teléfono / WhatsApp</label>
-                                <input type="tel" class="form-input" placeholder="+51 999 999 999">
+                                <input type="tel" id="pr-telefono" name="telefono" class="form-input" placeholder="+51 999 999 999">
                             </div>
 
                             <div class="form-group">
@@ -2522,7 +2522,7 @@
                             <div class="form-group">
                                 <label class="form-label">Tipo de servicio requerido</label>
                                 <div class="select-wrap">
-                                    <select class="form-input" required>
+                                    <select id="pr-servicio" name="servicio" class="form-input" required>
                                         <option value="">Selecciona una opción</option>
                                         <option>Consultoría estratégica en IA</option>
                                         <option>Automatización de procesos</option>
@@ -2538,7 +2538,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Describe tu proyecto</label>
-                                <textarea class="form-input" placeholder="Cuéntanos sobre tu empresa, tus desafíos y qué esperas lograr con IA..." required></textarea>
+                                <textarea id="pr-descripcion" name="descripcion" class="form-input" placeholder="Cuéntanos sobre tu empresa, tus desafíos y qué esperas lograr con IA..." required></textarea>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Presupuesto estimado</label>
@@ -2557,7 +2557,7 @@
                             <div class="form-group">
                                 <label class="form-label">Plazo deseado de implementación</label>
                                 <div class="select-wrap">
-                                    <select class="form-input" required>
+                                    <select id="pr-plazo" name="plazo" class="form-input" required>
                                         <option value="">Selecciona una opción</option>
                                         <option>Urgente (menos de 1 mes)</option>
                                         <option>1 – 3 meses</option>
@@ -2570,7 +2570,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-gold btn-block" id="priority-btn" style="margin-top:1rem;">
+                            <div class="pr-error" id="pr-submit-error" role="alert" style="margin-top:1rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5v.01"/></svg>No pudimos enviar tu solicitud. Por favor intenta de nuevo, o escríbenos directamente a soporte@universoqoriia.com.</div><button type="submit" class="btn btn-gold btn-block" id="priority-btn" style="margin-top:1rem;">
                                 Enviar solicitud
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4Z"/></svg>
                             </button>
@@ -3301,30 +3301,7 @@
             if (grid) grid.classList.remove('invalid');
         }
 
-        function submitPriority(e) {
-            e.preventDefault();
-
-            const budget = document.getElementById('budget-input');
-            if (!budget.value) {
-                const err = document.getElementById('pr-budget-error');
-                const grid = document.getElementById('pr-budget-options');
-                err.classList.add('show');
-                grid.classList.add('invalid');
-                grid.scrollIntoView({ block: 'center' });
-                return;
-            }
-            prClearBudgetError();
-
-            const btn = document.getElementById('priority-btn');
-            btn.classList.add('loading');
-
-            setTimeout(() => {
-                btn.classList.remove('loading');
-                document.getElementById('pr-form-state').style.display = 'none';
-                document.getElementById('pr-success-state').style.display = '';
-                document.querySelector('#modal-priority .modal').scrollTop = 0;
-            }, 1800);
-        }
+        const PRIORITY_ENDPOINT = 'https://qori-priority-worker.qoriaiofficial.workers.dev'; function submitPriority(e) { e.preventDefault(); const budget = document.getElementById('budget-input'); if (!budget.value) { const err = document.getElementById('pr-budget-error'); const grid = document.getElementById('pr-budget-options'); err.classList.add('show'); grid.classList.add('invalid'); grid.scrollIntoView({ block: 'center' }); return; } prClearBudgetError(); const submitErr = document.getElementById('pr-submit-error'); submitErr.classList.remove('show'); const btn = document.getElementById('priority-btn'); btn.classList.add('loading'); const payload = { nombre: document.getElementById('pr-nombre').value, cargo: document.getElementById('pr-cargo').value, empresa: document.getElementById('pr-empresa').value, email: document.getElementById('pr-email').value, telefono: document.getElementById('pr-telefono').value, metodo_contacto: document.getElementById('contact-input').value, servicio: document.getElementById('pr-servicio').value, descripcion: document.getElementById('pr-descripcion').value, presupuesto: budget.value, plazo: document.getElementById('pr-plazo').value }; fetch(PRIORITY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(res => { if (!res.ok) throw new Error('bad_status_' + res.status); return res.json(); }).then(data => { if (!data || data.ok !== true) throw new Error('bad_response'); btn.classList.remove('loading'); document.getElementById('pr-form-state').style.display = 'none'; document.getElementById('pr-success-state').style.display = ''; document.querySelector('#modal-priority .modal').scrollTop = 0; }).catch(err => { console.error('QORI Priority: fallo al enviar la solicitud.', err); btn.classList.remove('loading'); submitErr.classList.add('show'); submitErr.scrollIntoView({ block: 'center' }); }); }
 
         /* ===== Selección de presupuesto y método de contacto ===== */
         document.querySelectorAll('#modal-priority .budget-option').forEach(o => {
