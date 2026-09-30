@@ -2,6 +2,14 @@
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C0FGW0JKS3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-C0FGW0JKS3');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QORI AI | El Ecosistema de Inteligencia Artificial del Perú</title>
     <meta name="description" content="QORI AI: El ecosistema de Inteligencia Artificial del Perú. Aprende, automatiza y crea el futuro con QoriBot.">
@@ -2121,7 +2129,7 @@
                     <li>Mejorar la plataforma y personalizar tu experiencia (ej. contenido por región Costa/Sierra/Selva).</li>
                 </ul>
                 <h3>3. Con quién compartimos datos</h3>
-                <p>No vendemos tus datos personales. Podemos compartir información con proveedores que nos ayudan a operar (procesador de pagos, hosting, email) bajo acuerdos de confidencialidad.</p>
+                <p>No vendemos tus datos personales. Podemos compartir información con proveedores que nos ayudan a operar (procesador de pagos, hosting, email) bajo acuerdos de confidencialidad. Usamos Google Analytics para medir las visitas al sitio y el rendimiento de nuestros anuncios.</p>
                 <h3>4. Tus derechos</h3>
                 <p>Tienes derecho a acceder, rectificar, cancelar y oponerte al uso de tus datos (derechos ARCO). Escríbenos a privacidad@universoqoriia.com para ejercerlos.</p>
                 <h3>5. Seguridad</h3>
@@ -2157,7 +2165,7 @@
                 <ul>
                     <li>Esenciales: necesarias para el funcionamiento del sitio y el checkout.</li>
                     <li>Preferencias: recuerdan tus elecciones (región, idioma).</li>
-                    <li>Analíticas: nos ayudan a entender cómo se usa la plataforma.</li>
+                    <li>Analíticas: usamos Google Analytics para medir las visitas y el rendimiento de nuestros anuncios, y entender cómo se usa la plataforma.</li>
                 </ul>
                 <h3>Contacto</h3>
                 <p>soporte@universoqoriia.com</p>
@@ -2904,6 +2912,7 @@
             resetCheckout();
             updateCheckout();
             openModal('modal-checkout');
+            qTrackBeginCheckout(plan);   // solo checkouts nuevos: el reingreso con coBusy no cuenta de nuevo
         }
 
         // Vuelve al formulario (oculta éxito/pendiente) sin perder el plan.
@@ -3141,7 +3150,7 @@
         function coHandleResult(data) {
             if (data.status === 'needs_3ds') return coStart3DS();
             if (data.status === 'created') {
-                return data.active ? coShowSuccess(data.communityUrl) : coConfirm(data.subscriptionId);
+                return data.active ? coShowSuccess(data.communityUrl, data.subscriptionId) : coConfirm(data.subscriptionId);
             }
             if (data.status === 'pending_confirmation') {
                 return coShowPending(data.message || 'Estamos confirmando tu suscripción. No vuelvas a pagar: te escribiremos en cuanto se confirme.');
@@ -3216,7 +3225,7 @@
                 try {
                     const res = await fetch(PAY_API + '/api/subscription/' + encodeURIComponent(subscriptionId));
                     const d = await res.json();
-                    if (res.ok && d.active) return coShowSuccess(d.communityUrl);
+                    if (res.ok && d.active) return coShowSuccess(d.communityUrl, subscriptionId);
                     if (res.ok && (d.status === 4 || d.status === 6)) {
                         return coPendingView('No pudimos completar tu suscripción',
                             'Tu banco no confirmó el primer cobro y la suscripción no quedó activa. Escríbenos a ' + CO_SUPPORT + ' y te ayudamos.', false);
@@ -3234,8 +3243,11 @@
         }
 
         // communityUrl llega del Worker solo cuando la suscripción está activa (no vive en este HTML).
-        function coShowSuccess(communityUrl) {
+        function coShowSuccess(communityUrl, subscriptionId) {
             const a = coAttempt;
+            // Único punto donde Culqi ya confirmó el cobro (d.active). Se lee antes de
+            // que coAttempt pase a null más abajo.
+            if (a) qTrackPurchase(a, subscriptionId);
             clearTimeout(coPollTimer);
             coSetBusy(false);
             coReset3DS();
@@ -3526,6 +3538,104 @@
             document.getElementById('lr-ok-estado').style.display = 'none';
             openModal('modal-libro-reclamaciones');
         }
+
+        /* ========================================================
+           ANALÍTICA (GA4)
+           gtag se define en línea en el <head>, así que qTrack nunca
+           lanza error aunque un bloqueador impida cargar gtag.js: el
+           evento simplemente queda en dataLayer sin enviarse.
+
+           Pendiente: Meta Pixel y TikTok Pixel, cuando lleguen los IDs.
+           Mismos puntos de disparo, con sus nombres de evento:
+             Meta:   PageView, Lead, InitiateCheckout, Purchase
+             TikTok: Page View, SubmitForm, InitiateCheckout, CompletePayment
+           ======================================================== */
+        function qTrack(name, params) {
+            if (typeof gtag === 'function') gtag('event', name, params || {});
+        }
+
+        const Q_PLAN_NAMES = { plus: 'QORI PLUS', pro: 'QORI PRO', priority: 'QORI PRIORITY' };
+
+        // begin_checkout: se llama desde openCheckout() al abrir un checkout nuevo.
+        function qTrackBeginCheckout(plan) {
+            const p = CO_PLANS[plan];
+            if (!p) return;
+            const sel = coIsAnnual ? p.annual : p.monthly;
+            const value = sel.amount / 100;   // céntimos -> soles, IGV incluido
+            qTrack('begin_checkout', {
+                currency: 'PEN',
+                value: value,
+                plan_name: p.name,
+                items: [{
+                    item_id: sel.code,
+                    item_name: p.name,
+                    item_variant: coIsAnnual ? 'anual' : 'mensual',
+                    price: value,
+                    quantity: 1
+                }]
+            });
+        }
+
+        // purchase: se llama SOLO desde coShowSuccess(), que únicamente se alcanza
+        // cuando el Worker confirma con Culqi que la suscripción está activa.
+        // transaction_id = id de la suscripción en Culqi, para que GA4 deduplique
+        // y para poder cuadrar los ingresos con CulqiPanel.
+        function qTrackPurchase(a, subscriptionId) {
+            const value = a.amount / 100;
+            qTrack('purchase', {
+                transaction_id: subscriptionId || a.key,
+                currency: 'PEN',
+                value: value,
+                plan_name: a.planLabel,
+                items: [{
+                    item_id: a.planCode,
+                    item_name: a.planLabel,
+                    price: value,
+                    quantity: 1
+                }]
+            });
+        }
+
+        // select_content: botones de plan en #membresia.
+        // En fase de captura para que se dispare ANTES del onclick en línea
+        // (que abre el checkout y emite begin_checkout): así el embudo queda
+        // select_content -> begin_checkout y no al revés.
+        document.querySelectorAll('#membresia a[onclick]').forEach(btn => {
+            const m = btn.getAttribute('onclick').match(/openCheckout\('(plus|pro)'\)|openPriority\(\)/);
+            if (!m) return;
+            const plan = m[1] || 'priority';
+            btn.addEventListener('click', () => qTrack('select_content', {
+                content_type: 'plan',
+                content_id: plan,
+                plan_name: Q_PLAN_NAMES[plan]
+            }), true);
+        });
+
+        // generate_lead: alta gratuita (Brevo). Se escucha el submit y no el clic,
+        // así solo cuenta cuando el correo pasa la validación del formulario.
+        const qLeadForm = document.querySelector('form[action*="sibforms.com"]');
+        if (qLeadForm) {
+            qLeadForm.addEventListener('submit', () => qTrack('generate_lead', {
+                lead_source: 'newsletter_brevo',
+                form_name: 'newsletter'
+            }));
+        }
+
+        // file_download: todos los recursos gratuitos alojados en /Downloads/.
+        // Un solo listener delegado cubre los 7 enlaces (Prompt Book y Playbook
+        // aparecen dos veces cada uno). Los parámetros usan los mismos nombres que
+        // la medición mejorada de GA4 para que los informes sean consistentes.
+        document.addEventListener('click', (e) => {
+            const a = e.target.closest('a[href*="qoriaiofficial.github.io/Downloads/"]');
+            if (!a) return;
+            const file = decodeURIComponent(new URL(a.href).pathname.split('/').pop());
+            qTrack('file_download', {
+                file_name: file,
+                file_extension: (file.split('.').pop() || '').toLowerCase(),
+                link_url: a.href,
+                link_text: a.textContent.trim().replace(/\s+/g, ' ').slice(0, 100)
+            });
+        });
     </script>
 </body>
 </html>
