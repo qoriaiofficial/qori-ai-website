@@ -10,6 +10,18 @@
       gtag('js', new Date());
       gtag('config', 'G-C0FGW0JKS3');
     </script>
+    <!-- TikTok Pixel Code Start -->
+    <script>
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+    var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+    ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+
+      ttq.load('DAU8F4JC77U5PB60G320');
+      ttq.page();
+    }(window, document, 'ttq');
+    </script>
+    <!-- TikTok Pixel Code End -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QORI AI | El Ecosistema de Inteligencia Artificial del Perú</title>
     <meta name="description" content="QORI AI: El ecosistema de Inteligencia Artificial del Perú. Aprende, automatiza y crea el futuro con QoriBot.">
@@ -2129,7 +2141,7 @@
                     <li>Mejorar la plataforma y personalizar tu experiencia (ej. contenido por región Costa/Sierra/Selva).</li>
                 </ul>
                 <h3>3. Con quién compartimos datos</h3>
-                <p>No vendemos tus datos personales. Podemos compartir información con proveedores que nos ayudan a operar (procesador de pagos, hosting, email) bajo acuerdos de confidencialidad. Usamos Google Analytics para medir las visitas al sitio y el rendimiento de nuestros anuncios.</p>
+                <p>No vendemos tus datos personales. Podemos compartir información con proveedores que nos ayudan a operar (procesador de pagos, hosting, email) bajo acuerdos de confidencialidad. Usamos Google Analytics y el Píxel de TikTok para medir las visitas al sitio y el rendimiento de nuestros anuncios.</p>
                 <h3>4. Tus derechos</h3>
                 <p>Tienes derecho a acceder, rectificar, cancelar y oponerte al uso de tus datos (derechos ARCO). Escríbenos a privacidad@universoqoriia.com para ejercerlos.</p>
                 <h3>5. Seguridad</h3>
@@ -2165,7 +2177,7 @@
                 <ul>
                     <li>Esenciales: necesarias para el funcionamiento del sitio y el checkout.</li>
                     <li>Preferencias: recuerdan tus elecciones (región, idioma).</li>
-                    <li>Analíticas: usamos Google Analytics para medir las visitas y el rendimiento de nuestros anuncios, y entender cómo se usa la plataforma.</li>
+                    <li>Analíticas: usamos Google Analytics y el Píxel de TikTok para medir las visitas y el rendimiento de nuestros anuncios, y entender cómo se usa la plataforma.</li>
                 </ul>
                 <h3>Contacto</h3>
                 <p>soporte@universoqoriia.com</p>
@@ -3540,18 +3552,26 @@
         }
 
         /* ========================================================
-           ANALÍTICA (GA4)
-           gtag se define en línea en el <head>, así que qTrack nunca
-           lanza error aunque un bloqueador impida cargar gtag.js: el
-           evento simplemente queda en dataLayer sin enviarse.
+           ANALÍTICA (GA4 + TikTok Pixel)
+           gtag y ttq se definen en línea en el <head>, así que qTrack y
+           qTT nunca lanzan error aunque un bloqueador impida cargar
+           gtag.js o events.js: el evento simplemente no se envía.
 
-           Pendiente: Meta Pixel y TikTok Pixel, cuando lleguen los IDs.
-           Mismos puntos de disparo, con sus nombres de evento:
-             Meta:   PageView, Lead, InitiateCheckout, Purchase
-             TikTok: Page View, SubmitForm, InitiateCheckout, CompletePayment
+           Equivalencias GA4 -> TikTok (PageView lo hace ttq.page() en el <head>):
+             generate_lead  -> SubmitForm
+             begin_checkout -> InitiateCheckout
+             purchase       -> CompletePayment
+             file_download  -> Download
+
+           Pendiente: Meta Pixel, cuando llegue el ID.
+             Meta: PageView, Lead, InitiateCheckout, Purchase
            ======================================================== */
         function qTrack(name, params) {
             if (typeof gtag === 'function') gtag('event', name, params || {});
+        }
+
+        function qTT(name, params, options) {
+            if (window.ttq) window.ttq.track(name, params || {}, options || {});
         }
 
         const Q_PLAN_NAMES = { plus: 'QORI PLUS', pro: 'QORI PRO', priority: 'QORI PRIORITY' };
@@ -3574,6 +3594,7 @@
                     quantity: 1
                 }]
             });
+            qTT('InitiateCheckout', { value: value, currency: 'PEN' });
         }
 
         // purchase: se llama SOLO desde coShowSuccess(), que únicamente se alcanza
@@ -3594,6 +3615,9 @@
                     quantity: 1
                 }]
             });
+            // event_id = mismo id de la suscripción: TikTok deduplica por él.
+            qTT('CompletePayment', { value: value, currency: 'PEN', content_type: 'product' },
+                { event_id: subscriptionId || a.key });
         }
 
         // select_content: botones de plan en #membresia.
@@ -3615,10 +3639,13 @@
         // así solo cuenta cuando el correo pasa la validación del formulario.
         const qLeadForm = document.querySelector('form[action*="sibforms.com"]');
         if (qLeadForm) {
-            qLeadForm.addEventListener('submit', () => qTrack('generate_lead', {
-                lead_source: 'newsletter_brevo',
-                form_name: 'newsletter'
-            }));
+            qLeadForm.addEventListener('submit', () => {
+                qTrack('generate_lead', {
+                    lead_source: 'newsletter_brevo',
+                    form_name: 'newsletter'
+                });
+                qTT('SubmitForm');
+            });
         }
 
         // file_download: todos los recursos gratuitos alojados en /Downloads/.
@@ -3635,6 +3662,7 @@
                 link_url: a.href,
                 link_text: a.textContent.trim().replace(/\s+/g, ' ').slice(0, 100)
             });
+            qTT('Download');
         });
     </script>
 </body>
