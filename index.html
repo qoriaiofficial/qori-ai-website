@@ -1125,6 +1125,9 @@
             .qori-picker .card-top > span { font-size: 8px; }
             .accordion-inner { padding-left: 0; }
         }
+
+        /* Campo trampa del formulario de Brevo (misma regla que su sib-styles.css) */
+        .input--hidden { display: none !important; }
     </style>
 </head>
 <body class="bg-bg-primary inca-pattern">
@@ -1990,6 +1993,7 @@
                 <button type="submit" class="bg-gold-highlight text-black px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-sm md:text-base hover:bg-white transition glow-gold whitespace-nowrap text-center">
                     Suscribirme
                 </button>
+                <input type="text" name="email_address_check" value="" class="input--hidden">
             </form>
         </div>
     </section>
@@ -3639,7 +3643,16 @@
         // así solo cuenta cuando el correo pasa la validación del formulario.
         const qLeadForm = document.querySelector('form[action*="sibforms.com"]');
         if (qLeadForm) {
-            qLeadForm.addEventListener('submit', () => {
+            qLeadForm.addEventListener('submit', (e) => {
+                // Campo trampa (honeypot de Brevo): solo lo rellenan bots. No se envía
+                // nada y se muestra el mismo mensaje de éxito de Brevo en la pestaña nueva.
+                if (qLeadForm.elements['email_address_check'].value) {
+                    e.preventDefault();
+                    const w = window.open('', '_blank');
+                    if (w) w.document.body.textContent = 'Se ha realizado tu suscripción.';
+                    qLeadForm.reset();
+                    return;
+                }
                 qTrack('generate_lead', {
                     lead_source: 'newsletter_brevo',
                     form_name: 'newsletter'
